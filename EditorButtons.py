@@ -105,4 +105,8 @@ class SpikeBlockPlacer(BlockPlacer):
     img = Img.imgstripx("Tiles/SpikeBlock")[0]
     bc=Tiles.SpikeBlock
     sc=Tiles.GravShape
+class CheesePlacer(BlockPlacer):
+    img = Img.imgstripx("Tiles/Cheese")[0]
+    bc=Tiles.Cheese
+    sc=Tiles.GravShape
 

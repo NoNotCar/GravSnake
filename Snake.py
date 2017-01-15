@@ -58,13 +58,13 @@ class SnakeHead(Tile):
     def move(self,b,dx,dy):
         tx,ty=self.x+dx,self.y+dy
         snake=self.snake.tiles
-        fruity=False
+        eating=False
         if b.in_world(tx,ty):
             for t in b.get_ts(tx,ty):
-                if t.name=="Fruit":
-                    fruity=True
+                if t.edible:
+                    eating=t.eat(b)
                     b.dest(t)
-                    b.fruit-=1
+                    t.on_dest(b)
                     b.re_img()
                     if not b.turbo:
                         grow.play()
@@ -81,7 +81,7 @@ class SnakeHead(Tile):
                     return False
         else:
             return False
-        if not fruity:
+        if not eating:
             b.dest(snake.pop(0))
             snake[0].bdir = 0
         nd=D.dirs.index((dx, dy))

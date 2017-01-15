@@ -12,6 +12,7 @@ class Tile(object):
     state=False
     unisolid=tuple()
     grav=1
+    edible=False
     def __init__(self,x,y):
         self.x,self.y=x,y
     def re_img(self,b,lstart=True):
@@ -20,6 +21,8 @@ class Tile(object):
         pass
     def on_dest(self,b):
         pass
+    def eat(self,b):
+        return True
     def is_face(self,dx,dy):
         if self.gshape:
             tx,ty=self.x+dx,self.y+dy
@@ -106,9 +109,13 @@ IM_BLOCK=UTImageManager("Tiles/GravBlock",lambda:(randint(50,150),randint(50,150
 class Fruit(Tile):
     name = "Fruit"
     imgs=imgstripx("Fruit")
+    edible = True
     def __init__(self,x,y):
         Tile.__init__(self,x,y)
         self.iid=IM_FRUIT.register()
+    def eat(self,b):
+        b.fruit-=1
+        return True
     @property
     def state(self):
         return "Fruit"+str((self.x,self.y))
@@ -153,3 +160,8 @@ class CloudBlock(Block):
 class SpikeBlock(Block):
     ut=UltraTiles("Tiles/SpikeBlock")
     spiky = True
+class Cheese(Block):
+    ut=UltraTiles("Tiles/Cheese")
+    edible = True
+    def eat(self,b):
+        return False
