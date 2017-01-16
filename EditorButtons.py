@@ -45,6 +45,7 @@ class Placer(object):
     img=None
     multi=False
     contiguous=True
+    continous=True
     def place(self,b,tpos):
         pass
     def dest(self,b,tpos):
@@ -86,6 +87,14 @@ class SnakePlacer(Placer):
         tx,ty=tpos[-1]
         sh=self.head(tx,ty,snake)
         b.spawn(sh)
+class SnakeFlipper(Placer):
+    img=bimg4("FlipSnake")
+    continous = False
+    def place(self,b,tpos):
+        for t in b.get_ts(*tpos):
+            if "Snake" in t.name and t.grav:
+                t.snake.grav=-t.grav
+                break
 class BlockPlacer(Placer):
     multi = True
     contiguous = False

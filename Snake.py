@@ -21,7 +21,6 @@ class SnakeImageManager(ImageManager):
         return ([multicolcopy(i, ((128, 128, 128), col), ((64, 64, 64), tuple(c // 2 for c in col))) for i in self.h],
                                    [multicolcopy(i, ((128, 128, 128), col),((64, 64, 64), tuple(c // 2 for c in col))) for i in self.t])
 IM_SNAKE=SnakeImageManager(imgstripx("SnakeHead"),tilemapx("SnakeSeg"))
-IM_ANTISNAKE=SnakeImageManager(imgstripx("AntiHead"),tilemapx("SnakeSeg"))
 IM_IRONSNAKE=SnakeImageManager(imgstripx("IronSnakeHead"),tilemapx("IronSnakeSeg"),lambda:tuple(randint(100, 150) for _ in range(3)))
 class SnakeSeg(Tile):
     name="SnakeSeg"
@@ -38,16 +37,18 @@ class SnakeSeg(Tile):
     @property
     def img(self):
         return self.snake.tailimgs[self.fdir+self.bdir]
+    @property
+    def grav(self):
+        return self.snake.grav
 class IronSnakeSeg(SnakeSeg):
     spikable = False
-class AntiSnakeSeg(SnakeSeg):
-    grav = -1
 class SnakeHead(Tile):
     name="SnakeHead"
     selected=True
     spikable = True
     segclass=SnakeSeg
     eimg = imgstripx("SnakeHead")[3]
+    faces={-1:imgstripx("AntiSnakeFace"),1:imgstripx("SnakeFace")}
     def __init__(self,x,y,snake):
         Tile.__init__(self,x,y)
         self.snake=snake
@@ -94,23 +95,27 @@ class SnakeHead(Tile):
         return True
     def is_face(self,dx,dy):
         return (dx,dy) != D.dirs[(self.d+2)%4]
+    def draw(self,b,screen):
+        tpos=self.x*b.scale,self.y*b.scale
+        screen.blit(self.img[b.iscale],tpos)
+        screen.blit(self.faces[self.grav][self.selected][b.iscale],tpos)
     @property
     def img(self):
-        return self.snake.headimgs[(self.d+2)%4+4*self.selected]
+        return self.snake.tailimgs[2**((self.d+2)%4)]
     @property
     def state(self):
         return ",".join(s.name+str((s.x,s.y)) for s in self.snake.tiles)
+    @property
+    def grav(self):
+        return self.snake.grav
 class IronSnakeHead(SnakeHead):
     spikable = False
     segclass = IronSnakeSeg
     eimg=imgstripx("IronSnakeHead")[3]
-class AntiSnakeHead(SnakeHead):
-    segclass = AntiSnakeSeg
-    grav = -1
-    eimg = imgstripx("AntiHead")[3]
 class Snake(GravShape):
     head=SnakeHead
     im=IM_SNAKE
+    grav=1
     def __init__(self,*tiles):
         GravShape.__init__(self,*tiles)
         self.iid=self.im.register()
@@ -123,8 +128,5 @@ class Snake(GravShape):
 class IronSnake(Snake):
     head = IronSnakeHead
     im=IM_IRONSNAKE
-class AntiSnake(Snake):
-    head = AntiSnakeHead
-    im=IM_ANTISNAKE
 
 

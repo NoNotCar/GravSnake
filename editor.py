@@ -8,7 +8,7 @@ import EditorButtons as B
 import pickle
 import Tiles
 import Direction as D
-from Snake import Snake,IronSnake,AntiSnake
+from Snake import Snake,IronSnake
 from random import choice
 from copy import deepcopy
 from LevelRunner import run
@@ -25,7 +25,7 @@ resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.Resizer(0),B.Resizer(1),B.Scaler(),B.PlayButton()]
 placers=[B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
-         B.SnakePlacer(Snake),B.SnakePlacer(AntiSnake),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
+         B.SnakePlacer(Snake),B.SnakeFlipper(),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),B.CheesePlacer()]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
@@ -146,7 +146,7 @@ while True:
     if flip:
         screen.fill((100,100,100))
     gp=pygame.mouse.get_pressed()
-    if gp[0] or gp[2]:
+    if (gp[0] or gp[2]) and (placers[selected].continous or any((e.type==pygame.MOUSEBUTTONDOWN for e in es))):
         if r.collidepoint(mx, my):
             ppos = ((mx - r.left) // scale, (my - r.top) // scale)
             if placers[selected].multi:

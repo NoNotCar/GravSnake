@@ -4,6 +4,7 @@ import os
 from random import choice
 import math
 import colorsys
+from itertools import count
 tau=math.pi*2
 hpi=math.pi/2
 
@@ -270,13 +271,12 @@ def convimgs(image,rep,speed):
     return convs
 imss=[]
 class ImageManager(object):
-    nnum=0
     def __init__(self):
         self.imgs={}
         imss.append(self)
     def register(self):
-        self.nnum+=1
-        return self.nnum-1
+        used=self.imgs.keys()
+        return next((n for n in count() if n not in used))
     def gen_img(self):
         return None
     def __getitem__(self, item):

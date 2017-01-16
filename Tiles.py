@@ -31,6 +31,8 @@ class Tile(object):
             return (dx,dy) in self.unisolid
         else:
             return self.solid
+    def draw(self,b,screen):
+        screen.blit(self.img[b.iscale],(self.x*b.scale,self.y*b.scale))
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)
@@ -52,12 +54,20 @@ class UltraTile(Tile):
 
 class Air(Tile):
     solid = False
+    def draw(self,b,screen):
+        pass
 class Dirt(UltraTile):
     ut=UltraTiles("Tiles/Dirt")
     name="Dirt"
 class Snow(UltraTile):
     ut=UltraTiles("Tiles/Snow")
     name="Snow"
+class Explosion(Tile):
+    img=imgx("Exp")
+    name="Exp"
+    def draw(self,b,screen):
+        a=b.ascale
+        screen.blit(self.img[b.iscale], (self.x * b.scale+randint(-a,a), self.y * b.scale+randint(-a,a)))
 class WoodPlatform(Tile):
     solid = False
     unisolid = ((0,-1),)

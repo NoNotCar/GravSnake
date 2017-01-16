@@ -10,6 +10,7 @@ from copy import deepcopy
 white=(255,255,255)
 INPUT=0
 GRAVITY=1
+EXPLODING=2
 class GameEnd(Exception):
     def __init__(self,fail,code):
         self.fail=fail
@@ -21,6 +22,7 @@ class Solution(Exception):
         self.solution=solution
 kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0)}
 portal=Img.sndget("portal")
+exp=Img.sndget("exp")
 speed=5
 class Board(object):
     tcool=0
@@ -42,15 +44,8 @@ class Board(object):
     def render(self,screen):
         if self.game:
             self.biome.render_back(screen,self)
-        for x,y in self.iterlocs():
-            for t in self.get_ts(x,y):
-                i=t.img
-                if i:
-                    try:
-                        screen.blit(i[self.iscale], (x * self.scale, y * self.scale))
-                    except pygame.error as e:
-                        print t.name
-                        raise e
+        for t in self.itertiles():
+            t.draw(self,screen)
         if self.game:
             self.biome.render_front(screen,self)
     def update(self,events,mx,my):
@@ -58,16 +53,22 @@ class Board(object):
             if self.tcool:
                 self.tcool-=1
             else:
-                if self.grav():
-                    self.tcool=speed
-                    self.snake_goal_test()
-                else:
-                    self.phase=INPUT
-                    self.snake_goal_test()
-                    state=self.state
-                    if state!=self.lstate:
-                        self.lstate=state
-                        return deepcopy(self)
+                if self.phase==GRAVITY:
+                    if self.grav():
+                        self.tcool=speed*(1 if self.phase==GRAVITY else 4)
+                        self.snake_goal_test()
+                    else:
+                        self.phase=INPUT
+                        self.snake_goal_test()
+                        state=self.state
+                        if state!=self.lstate:
+                            self.lstate=state
+                            return deepcopy(self)
+                elif self.phase==EXPLODING:
+                    for t in self.itertiles():
+                        if t.name=="Exp":
+                            self.dest(t)
+                    self.phase=GRAVITY
         else:
             for e in events:
                 if e.type==pygame.MOUSEBUTTONDOWN:
@@ -132,12 +133,22 @@ class Board(object):
                     continue
                 break
             else:
+                exps=set()
                 for ct in cgroup:
-                    self.move(ct,0,g)
+                    e=self.move(ct,0,g)
+                    if e:
+                        exps|=set(e.gshape.tiles)
+                for e in exps:
+                    if self.in_world(e.x,e.y):
+                        self.dest(e)
+                        self.spawn(Tiles.Explosion(e.x,e.y))
+                        self.phase=EXPLODING
                 fixed.update(cgroup)
                 grav=True
             if failnofall:
                 raise GameEnd(True, "FAIL")
+        if self.phase==EXPLODING:
+            exp.play()
         return grav
     def snake_push(self,pshape,dx,dy,snake):
         cgroup = pshape.tiles[:]
@@ -198,17 +209,14 @@ class Board(object):
         self.t[s.x][s.y].append(s)
     def dest(self,s):
         self.t[s.x][s.y].remove(s)
-    def destshape(self,o):
-        assert o.gshape, "WHAT ARE YOU DOING?!"
-        if "Snake" in o.name:
-            raise GameEnd(True,"FAIL")
-        o.on_dest(self)
     def move(self,o,dx,dy):
         self.dest(o)
         o.x+=dx
         o.y+=dy
         if o.y>=self.sy or o.y<0:
-            self.destshape(o)
+            if "Snake" in o.name:
+                raise GameEnd(True, "FAIL")
+            return o
         else:
             self.spawn(o)
     def resize(self,h,big):
