@@ -34,6 +34,13 @@ class SnakeSeg(Tile):
         self.gshape=snake
     def is_face(self,dx,dy):
         return (dx,dy) not in [D.dirs[self.dconv[d]] for d in (self.fdir,self.bdir) if d]
+    def on_dest(self,b):
+        if b.game:
+            raise RuntimeError,"SNEK DELETED IN GAME"
+        else:
+            for s in self.snake.tiles:
+                if not s is self:
+                    b.dest(s)
     @property
     def img(self):
         return self.snake.tailimgs[self.fdir+self.bdir]
@@ -99,6 +106,13 @@ class SnakeHead(Tile):
         tpos=self.x*b.scale,self.y*b.scale
         screen.blit(self.img[b.iscale],tpos)
         screen.blit(self.faces[self.grav][self.selected][b.iscale],tpos)
+    def on_dest(self,b):
+        if b.game:
+            raise RuntimeError,"SNEK DELETED IN GAME"
+        else:
+            for s in self.snake.tiles:
+                if not s is self:
+                    b.dest(s)
     @property
     def img(self):
         return self.snake.tailimgs[2**((self.d+2)%4)]

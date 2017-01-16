@@ -23,10 +23,10 @@ def resize_ss():
     ss = screen.subsurface(r)
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
-buttons=[B.Resizer(0),B.Resizer(1),B.Scaler(),B.PlayButton()]
+buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
 placers=[B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
          B.SnakePlacer(Snake),B.SnakeFlipper(),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
-         B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),B.CheesePlacer()]
+         B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer()]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -40,6 +40,7 @@ pygame.display.flip()
 saving=False
 savename="Levels/test"
 multipos=[]
+error=Img.sndget("nomove")
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
             sys.exit()
@@ -66,8 +67,17 @@ while True:
                 except B.ExternalMethod as m:
                     if m.task=="Play":
                         pb=deepcopy(b)
-                        pb.prepare()
+                        try:
+                            pb.prepare()
+                        except RuntimeError:
+                            del pb
+                            error.play()
+                            continue
                         run(pb,screen,ss,r)
+                    elif m.task=="New":
+                        b=Board.Board((b.sx,b.sy),b.scale)
+                        for im in Img.imss:
+                            im.reload()
                     # elif m.task=="Solve":
                     #     sb = deepcopy(b)
                     #     s=Board.Solver(sb)
@@ -149,15 +159,17 @@ while True:
     if (gp[0] or gp[2]) and (placers[selected].continous or any((e.type==pygame.MOUSEBUTTONDOWN for e in es))):
         if r.collidepoint(mx, my):
             ppos = ((mx - r.left) // scale, (my - r.top) // scale)
-            if placers[selected].multi:
+            if placers[selected].multi and gp[0]:
                 if ppos not in multipos and (not multipos or D.dist(ppos,multipos[-1])<=1 or not placers[selected].contiguous):
                     multipos.append(ppos)
             else:
                 if gp[0]:
                     placers[selected].place(b,ppos)
                 else:
+                    if multipos:
+                        multipos=[]
                     placers[selected].dest(b, ppos)
-    elif multipos and not (pygame.key.get_mods()&pygame.KMOD_LSHIFT and not placers[selected].contiguous):
+    elif multipos:
         psel=placers[selected]
         if psel.multi:
             psel.place(b,multipos)

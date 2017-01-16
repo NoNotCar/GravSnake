@@ -20,7 +20,8 @@ class ImpossibleException(Exception):
 class Solution(Exception):
     def __init__(self,solution):
         self.solution=solution
-kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0)}
+kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
+       pygame.K_UP: (0, -1), pygame.K_LEFT: (-1, 0), pygame.K_DOWN: (0, 1), pygame.K_RIGHT: (1, 0)}
 portal=Img.sndget("portal")
 exp=Img.sndget("exp")
 speed=5
@@ -261,7 +262,10 @@ class Board(object):
                 t.selected=False
             elif t.name=="Fruit":
                 self.fruit+=1
-        self.shead=self.shs[0]
+        try:
+            self.shead=self.shs[0]
+        except IndexError:
+            raise RuntimeError, "NO SNAKES IN LEVEL"
         self.shead.selected=True
         if game:
             self.re_img()

@@ -33,14 +33,13 @@ class Scaler(Button):
         else:
             board.scale = self.downscale[board.scale]
         return True
-class PlayButton(Button):
-    img=bimg4("Play")
+class ExternalButton(Button):
+    def __init__(self,task):
+        self.img=bimg4(task)
+        self.task=task
     def on_click(self,mb,board):
-        raise ExternalMethod("Play")
-class SolveButton(Button):
-    img=bimg4("Solve")
-    def on_click(self,mb,board):
-        raise ExternalMethod("Solve")
+        raise ExternalMethod(self.task)
+
 class Placer(object):
     img=None
     multi=False
@@ -49,7 +48,12 @@ class Placer(object):
     def place(self,b,tpos):
         pass
     def dest(self,b,tpos):
-        pass
+        ts = list(b.get_ts(*tpos))
+        if len(ts) > 1 or not isinstance(ts[0], Tiles.Air):
+            b.t[tpos[0]][tpos[1]] = [Tiles.Air(*tpos)]
+            for t in ts:
+                t.on_dest(b)
+            b.re_img()
     def scroll(self):
         pass
 class TerrainPlacer(Placer):
@@ -60,11 +64,6 @@ class TerrainPlacer(Placer):
         ts=list(b.get_ts(*tpos))
         if len(ts)>1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
-            b.re_img()
-    def dest(self,b,tpos):
-        ts = list(b.get_ts(*tpos))
-        if len(ts) > 1 or not isinstance(ts[0], Tiles.Air):
-            b.t[tpos[0]][tpos[1]] = [Tiles.Air(*tpos)]
             b.re_img()
 class SnakePlacer(Placer):
     multi = True
