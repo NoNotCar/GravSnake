@@ -26,6 +26,7 @@ class SnakeSeg(Tile):
     name="SnakeSeg"
     spikable = True
     dconv={1:0,2:1,4:2,8:3}
+    valuable = True
     def __init__(self,x,y,bdir,fdir,snake):
         Tile.__init__(self, x, y)
         self.bdir,self.fdir=bdir,fdir
@@ -54,6 +55,7 @@ class SnakeHead(Tile):
     selected=True
     spikable = True
     segclass=SnakeSeg
+    valuable = True
     eimg = imgstripx("SnakeHead")[3]
     faces={-1:imgstripx("AntiSnakeFace"),1:imgstripx("SnakeFace")}
     def __init__(self,x,y,snake):

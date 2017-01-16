@@ -65,6 +65,19 @@ class TerrainPlacer(Placer):
         if len(ts)>1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
             b.re_img()
+class XBPlacer(Placer):
+    img=Tiles.XBlock.imgs[1]
+    tc=Tiles.XBlock
+    def place(self,b,tpos):
+        ts=list(b.get_ts(*tpos))
+        if len(ts)>1 or not isinstance(ts[0],self.tc):
+            b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
+            b.re_img()
+    def dest(self,b,tpos):
+        ts=list(b.get_ts(*tpos))
+        if len(ts)>1 or not isinstance(ts[0],self.tc):
+            b.t[tpos[0]][tpos[1]]=[self.tc(tpos[0],tpos[1],True)]
+            b.re_img()
 class SnakePlacer(Placer):
     multi = True
     def __init__(self,sc):

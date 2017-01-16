@@ -79,6 +79,13 @@ class Board(object):
                         self.shead=nsh[0]
                         self.shead.selected = True
                         break
+                    else:
+                        for t in self.get_ts(mx,my):
+                            if t.interactive and t.interact(self,e.button):
+                                self.tcool = speed
+                                self.phase = GRAVITY
+                                self.snake_goal_test()
+                                break
                 if e.type==pygame.KEYDOWN:
                     if e.key in kconv.keys():
                         if self.shead.move(self,*kconv[e.key]):
@@ -215,7 +222,7 @@ class Board(object):
         o.x+=dx
         o.y+=dy
         if o.y>=self.sy or o.y<0:
-            if "Snake" in o.name:
+            if o.valuable:
                 raise GameEnd(True, "FAIL")
             return o
         else:
