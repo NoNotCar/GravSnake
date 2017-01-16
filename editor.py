@@ -1,7 +1,7 @@
 import pygame, sys
 pygame.init()
 pygame.font.init()
-screen = pygame.display.set_mode((1920,1080),pygame.FULLSCREEN)
+screen = pygame.display.set_mode(pygame.display.list_modes()[0],pygame.FULLSCREEN)
 clock=pygame.time.Clock()
 import Board, Img
 import EditorButtons as B
