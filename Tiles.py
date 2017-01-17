@@ -2,8 +2,6 @@ from Img import imgx,imgstripx,tilemapx, colcopy, RandomImageManager, UltraTiles
 from random import randint,choice
 from copy import deepcopy
 import Direction as D
-switch=sndget("switch")
-error=sndget("nomove")
 class Tile(object):
     solid=True
     gshape=None
@@ -138,38 +136,6 @@ class Fruit(Tile):
     @property
     def img(self):
         return IM_FRUIT[self.iid]
-class XBlock(Tile):
-    imgs=imgstripx("Tiles/XBlock")
-    name="XBlock"
-    def __init__(self,x,y,active=False):
-        Tile.__init__(self,x,y)
-        self.active=active
-    @property
-    def img(self):
-        return self.imgs[self.active]
-    @property
-    def solid(self):
-        return self.active
-    @property
-    def state(self):
-        return "XB"+"A" if self.active else ""
-class XButton(Tile):
-    img=imgx("Tiles/XButton")
-    interactive = True
-    def interact(self,b,mb):
-        xbs=[]
-        for t in b.itertiles():
-            if t.name=="XBlock":
-                if not any((ot.solid for ot in b.get_ts(t.x,t.y) if not ot is t)):
-                    xbs.append(t)
-                else:
-                    error.play()
-                    return False
-        for x in xbs:
-            x.active=not x.active
-        if xbs:
-            switch.play()
-            return True
 class GravShape(object):
     def __init__(self,*tiles):
         self.tiles=list(tiles)

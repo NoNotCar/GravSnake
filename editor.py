@@ -7,6 +7,7 @@ import Board, Img
 import EditorButtons as B
 import pickle
 import Tiles
+import Interactives
 import Direction as D
 from Snake import Snake,IronSnake
 from random import choice
@@ -26,7 +27,8 @@ downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
 placers=[B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
          B.SnakePlacer(Snake),B.SnakeFlipper(),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
-         B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),B.XBPlacer(),B.TerrainPlacer(Tiles.XButton)]
+         B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
+         B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),B.NTerrainPlacer(Interactives.XButton,4)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -51,7 +53,7 @@ while True:
     for e in es:
         if e.type==pygame.MOUSEBUTTONDOWN:
             if e.button in [4,5]:
-                placers[selected].scroll()
+                placers[selected].scroll(-1 if e.button==4 else 1)
             elif br.collidepoint(mx,my):
                 try:
                     if buttons[(mx-br.left)//64].on_click(e.button,b):

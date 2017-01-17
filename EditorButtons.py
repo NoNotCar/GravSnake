@@ -54,7 +54,7 @@ class Placer(object):
             for t in ts:
                 t.on_dest(b)
             b.re_img()
-    def scroll(self):
+    def scroll(self,d):
         pass
 class TerrainPlacer(Placer):
     def __init__(self,tclass):
@@ -65,19 +65,25 @@ class TerrainPlacer(Placer):
         if len(ts)>1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
             b.re_img()
-class XBPlacer(Placer):
-    img=Tiles.XBlock.imgs[1]
-    tc=Tiles.XBlock
+class NTerrainPlacer(Placer):
+    n=0
+    def __init__(self,tclass,n,*exargs):
+        self.tc=tclass
+        self.imgs=[tclass(0,0,r,*exargs).img for r in range(n)]
+        self.ns=n
+        self.args=exargs
     def place(self,b,tpos):
+        tx,ty=tpos
         ts=list(b.get_ts(*tpos))
         if len(ts)>1 or not isinstance(ts[0],self.tc):
-            b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
+            b.t[tpos[0]][tpos[1]]=[self.tc(tx,ty,self.n,*self.args)]
             b.re_img()
-    def dest(self,b,tpos):
-        ts=list(b.get_ts(*tpos))
-        if len(ts)>1 or not isinstance(ts[0],self.tc):
-            b.t[tpos[0]][tpos[1]]=[self.tc(tpos[0],tpos[1],True)]
-            b.re_img()
+    def scroll(self,d):
+        self.n+=d
+        self.n%=self.ns
+    @property
+    def img(self):
+        return self.imgs[self.n]
 class SnakePlacer(Placer):
     multi = True
     def __init__(self,sc):

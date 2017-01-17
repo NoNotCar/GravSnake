@@ -218,15 +218,15 @@ def colswap(img,sc,ec):
         for i in img.imgs:
             px = pygame.PixelArray(i)
             px.replace(sc, ec)
+    return img
 def colcopy(i,sc,ec):
     i=i.imgs[0].copy()
     colswap(i,sc,ec)
     return ScaledImage(i)
-def darker(col,fract):
-    frgb=tuple(c/255.0 for c in col)
-    hsv=list(colorsys.rgb_to_hsv(*frgb))
-    hsv[2]*=fract
-    return tuple(int(c*255) for c in colorsys.hsv_to_rgb(*hsv))
+def darker(col,fract=0.5):
+    return tuple(int(c*fract) for c in col)
+def lighter(col,fract=0.5):
+    return tuple(int(c+(255-c)*fract) for c in col)
 def multicolcopy(img,*args):
     img=colcopy(img,*args[0])
     for s,e in args[1:]:
