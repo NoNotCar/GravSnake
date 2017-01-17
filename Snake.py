@@ -85,6 +85,9 @@ class SnakeHead(Tile):
                     else:
                         nomove.play()
                         return False
+                elif t.solid and (dx,dy) in t.pushdirs:
+                    if not t.push(b):
+                        return False
                 elif t.is_face(-dx,-dy) or t in snake:
                     if not b.turbo:
                         nomove.play()

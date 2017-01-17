@@ -28,11 +28,12 @@ buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.External
 placers=[B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
          B.SnakePlacer(Snake),B.SnakeFlipper(),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
-         B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),B.NTerrainPlacer(Interactives.XButton,4)]
+         B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),
+         B.NTerrainPlacer(Interactives.XSwitch,4),B.NTerrainPlacer(Interactives.XSwitch,4,0),B.NTerrainPlacer(Interactives.XButton,4)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
-pr=pygame.Rect(0,0,len(placers)//16*64+64,min(len(placers)*64,1024))
+pr=pygame.Rect(0,0,(len(placers)-1)//16*64+64,min(len(placers)*64,1024))
 pr.centery=screen.get_rect().centery
 pss=screen.subsurface(pr)
 selected=0
@@ -121,7 +122,8 @@ while True:
                     #         pass
                     flip=True
             elif pr.collidepoint(mx,my):
-                selected=(my-pr.top)//64+mx//64*16
+                nsel=(my-pr.top)//64+mx//64*16
+                selected=nsel if nsel<len(placers) else selected
         elif e.type==pygame.KEYDOWN:
             kmods=pygame.key.get_mods()
             if e.key==pygame.K_s and kmods&pygame.KMOD_CTRL:

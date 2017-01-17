@@ -15,6 +15,7 @@ class Tile(object):
     edible=False
     valuable=False
     interactive=False
+    pushdirs=[]
     def __init__(self,x,y):
         self.x,self.y=x,y
     def re_img(self,b,lstart=True):
@@ -36,6 +37,8 @@ class Tile(object):
     def draw(self,b,screen):
         screen.blit(self.img[b.iscale],(self.x*b.scale,self.y*b.scale))
     def interact(self,b,mb):
+        pass
+    def push(self,b):
         pass
 class UltraTile(Tile):
     ut=None
