@@ -14,6 +14,8 @@ class Tile(object):
     grav=1
     edible=False
     valuable=False
+    goal=False
+    portals=False
     interactive=False
     pushdirs=[]
     def __init__(self,x,y):
@@ -40,6 +42,8 @@ class Tile(object):
         pass
     def push(self,b):
         pass
+    def satisfied(self,b):
+        return False
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)
@@ -182,3 +186,11 @@ class Cheese(Block):
     edible = True
     def eat(self,b):
         return False
+class Diamond(Tile):
+    img=imgx("Diamond")
+    portals = True
+    goal = True
+    valuable = True
+    def __init__(self,x,y):
+        Tile.__init__(self,x,y)
+        self.gshape=GravShape(self)

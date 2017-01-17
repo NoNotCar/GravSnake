@@ -57,10 +57,10 @@ class Board(object):
                 if self.phase==GRAVITY:
                     if self.grav():
                         self.tcool=speed*(1 if self.phase==GRAVITY else 4)
-                        self.snake_goal_test()
+                        self.goal_test()
                     else:
                         self.phase=INPUT
-                        self.snake_goal_test()
+                        self.goal_test()
                         state=self.state
                         if state!=self.lstate:
                             self.lstate=state
@@ -84,14 +84,14 @@ class Board(object):
                             if t.interactive and t.interact(self,e.button):
                                 self.tcool = speed
                                 self.phase = GRAVITY
-                                self.snake_goal_test()
+                                self.goal_test()
                                 break
                 if e.type==pygame.KEYDOWN:
                     if e.key in kconv.keys():
                         if self.shead.move(self,*kconv[e.key]):
                             self.tcool=speed
                             self.phase=GRAVITY
-                            self.snake_goal_test()
+                            self.goal_test()
                             break
                     elif e.key==pygame.K_r:
                         raise GameEnd(True,"RESET")
@@ -204,9 +204,9 @@ class Board(object):
         self.shs[snum].move(self, dx,dy)
         if self.turbo:
             self.history.append(((snum,(dx,dy)),self.state))
-        self.snake_goal_test()
+        self.goal_test()
         while self.grav():
-            self.snake_goal_test()
+            self.goal_test()
     def in_world(self,x,y):
         return 0<=x<self.sx and 0<=y<self.sy
     def get_ts(self,x,y):
@@ -249,19 +249,23 @@ class Board(object):
         for ts in itertools.chain(*self.t):
             for t in ts:
                 t.re_img(self)
-    def snake_goal_test(self):
+    def goal_test(self):
         if not self.fruit:
-            for sh in self.shs:
-                if any(t for t in self.get_ts(sh.x,sh.y) if t.name=="Portal"):
-                    for s in sh.snake.tiles:
+            for g in self.goals[:]:
+                if g.portals and any(t for t in self.get_ts(g.x,g.y) if t.name=="Portal"):
+                    self.goals.remove(g)
+                    for s in g.gshape.tiles:
                         self.dest(s)
-                    self.shs.remove(sh)
+                    if g in self.shs:
+                        self.shs.remove(g)
                     if not self.turbo:
                         portal.play()
-                    if not self.shs:
-                        raise GameEnd(False,"WIN")
+        self.goals=[g for g in self.goals if not g.satisfied(self)]
+        if not len(self.goals):
+            raise GameEnd(False,"WIN")
     def prepare(self,game=True):
         self.shs=[]
+        self.goals=[]
         self.game=game
         for t in self.itertiles():
             if t.name=="SnakeHead":
@@ -269,6 +273,8 @@ class Board(object):
                 t.selected=False
             elif t.name=="Fruit":
                 self.fruit+=1
+            if t.goal:
+                self.goals.append(t)
         try:
             self.shead=self.shs[0]
         except IndexError:

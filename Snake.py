@@ -56,6 +56,8 @@ class SnakeHead(Tile):
     spikable = True
     segclass=SnakeSeg
     valuable = True
+    goal=True
+    portals = True
     eimg = imgstripx("SnakeHead")[3]
     faces={-1:imgstripx("AntiSnakeFace"),1:imgstripx("SnakeFace")}
     def __init__(self,x,y,snake):
