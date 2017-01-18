@@ -25,12 +25,12 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
-placers=[B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
-         B.SnakePlacer(Snake),B.SnakeFlipper(),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
+placers=[B.Rotator(),B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
+         B.SnakePlacer(Snake),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
          B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),
          B.NTerrainPlacer(Interactives.XSwitch,4),B.NTerrainPlacer(Interactives.XSwitch,4,0),B.NTerrainPlacer(Interactives.XButton,4),
-         B.TerrainPlacer(Tiles.Diamond)]
+         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer()]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -82,45 +82,6 @@ while True:
                         b=Board.Board((b.sx,b.sy),b.scale)
                         for im in Img.imss:
                             im.reload()
-                    # elif m.task=="Solve":
-                    #     sb = deepcopy(b)
-                    #     s=Board.Solver(sb)
-                    #     screen.fill((100,100,100))
-                    #     uprate=1
-                    #     try:
-                    #         while True:
-                    #             for e in pygame.event.get():
-                    #                 check_exit(e)
-                    #             screen.fill((100, 100, 100))
-                    #             Img.bcentre(Img.savfont,"STATES: "+str(len(s.states)),screen)
-                    #             Img.bcentre(Img.savfont, "TESTED: " + str(len(s.past_states)), screen, 50)
-                    #             Img.bcentre(Img.savfont, "UPDATE RATE: " + str(uprate), screen,100)
-                    #             for _ in xrange(uprate):
-                    #                 s.update()
-                    #             pygame.display.flip()
-                    #             clock.tick(60)
-                    #             if clock.get_fps()>10:
-                    #                 uprate+=1
-                    #     except Board.Solution as se:
-                    #         sb = deepcopy(b)
-                    #         sb.prepare()
-                    #         back = (100, 255, 255)
-                    #         screen.fill(tuple(c * 0.5 for c in back))
-                    #         pygame.display.flip()
-                    #         try:
-                    #             while True:
-                    #                 es = pygame.event.get()
-                    #                 for e in es:
-                    #                     check_exit(e)
-                    #                 ss.fill(back)
-                    #                 sb.execute_move(se.solution.pop(0))
-                    #                 sb.render(ss)
-                    #                 pygame.display.update(r)
-                    #                 pygame.time.wait(500)
-                    #         except Board.GameEnd as error:
-                    #             pass
-                    #     except Board.ImpossibleException:
-                    #         pass
                     flip=True
             elif pr.collidepoint(mx,my):
                 nsel=(my-pr.top)//64+mx//64*16
@@ -161,21 +122,21 @@ while True:
     if flip:
         screen.fill((100,100,100))
     gp=pygame.mouse.get_pressed()
-    if (gp[0] or gp[2]) and (placers[selected].continous or any((e.type==pygame.MOUSEBUTTONDOWN for e in es))):
+    psel = placers[selected]
+    if (gp[0] or gp[2]) and (psel.continous or any((e.type==pygame.MOUSEBUTTONDOWN for e in es))):
         if r.collidepoint(mx, my):
             ppos = ((mx - r.left) // scale, (my - r.top) // scale)
-            if placers[selected].multi and gp[0]:
-                if ppos not in multipos and (not multipos or D.dist(ppos,multipos[-1])<=1 or not placers[selected].contiguous):
+            if psel.multi and gp[0]:
+                if ppos not in multipos and (not multipos or D.dist(ppos,multipos[-1])<=1 or not psel.contiguous):
                     multipos.append(ppos)
             else:
                 if gp[0]:
-                    placers[selected].place(b,ppos)
+                    psel.place(b, ppos)
                 else:
                     if multipos:
                         multipos=[]
-                    placers[selected].dest(b, ppos)
+                    psel.dest(b, ppos)
     elif multipos:
-        psel=placers[selected]
         if psel.multi:
             psel.place(b,multipos)
         multipos=[]
@@ -189,11 +150,13 @@ while True:
         if n==selected:
             pss.blit(selimg[3], (n//16*64,n%16*64))
     b.render(ss)
-    """if r.collidepoint(mx, my):
-        ss.blit(er.img,((mx-r.left)//64*64,(my-r.top)//64*64))"""
     sr=Img.bcentrex(Img.savfont,savename+".lvl",screen,screen.get_height()-32,(255,0,0) if saving else (0,0,0))
-    for mpos in multipos:
-        ss.blit(selimg[scale//16-1],tuple(m*scale for m in mpos))
+    if multipos:
+        for mpos in multipos:
+            ss.blit(selimg[scale//16-1],tuple(m*scale for m in mpos))
+    else:
+        if r.collidepoint(mx, my):
+            ss.blit((psel.img if psel.selicon else selimg)[scale//16-1],((mx-r.left)//scale*scale,(my-r.top)//scale*scale))
     if flip:
         pygame.display.flip()
     else:

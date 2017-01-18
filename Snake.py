@@ -52,7 +52,6 @@ class IronSnakeSeg(SnakeSeg):
     spikable = False
 class SnakeHead(Tile):
     name="SnakeHead"
-    selected=True
     spikable = True
     segclass=SnakeSeg
     valuable = True
@@ -60,6 +59,7 @@ class SnakeHead(Tile):
     portals = True
     eimg = imgstripx("SnakeHead")[3]
     faces={-1:imgstripx("AntiSnakeFace"),1:imgstripx("SnakeFace")}
+    interactive = 2
     def __init__(self,x,y,snake):
         Tile.__init__(self,x,y)
         self.snake=snake
@@ -67,7 +67,7 @@ class SnakeHead(Tile):
         snake.tiles.append(self)
         self.d=D.dirs.index((x-tx,y-ty))
         self.gshape=snake
-    def move(self,b,dx,dy):
+    def move(self,dx,dy,b):
         tx,ty=self.x+dx,self.y+dy
         snake=self.snake.tiles
         eating=False
@@ -78,11 +78,10 @@ class SnakeHead(Tile):
                     b.dest(t)
                     t.on_dest(b)
                     b.re_img()
-                    if not b.turbo:
-                        grow.play()
+                    grow.play()
                     break
                 elif t.gshape and t not in snake and not (t.spiky and self.spikable):
-                    if b.snake_push(t.gshape,dx,dy,self.snake):
+                    if b.push(t.gshape, dx, dy, self.snake):
                         break
                     else:
                         nomove.play()
@@ -91,8 +90,7 @@ class SnakeHead(Tile):
                     if not t.push(b):
                         return False
                 elif t.is_face(-dx,-dy) or t in snake:
-                    if not b.turbo:
-                        nomove.play()
+                    nomove.play()
                     return False
         else:
             return False

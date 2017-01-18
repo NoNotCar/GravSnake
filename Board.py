@@ -15,11 +15,6 @@ class GameEnd(Exception):
     def __init__(self,fail,code):
         self.fail=fail
         self.code=code
-class ImpossibleException(Exception):
-    pass
-class Solution(Exception):
-    def __init__(self,solution):
-        self.solution=solution
 kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
        pygame.K_UP: (0, -1), pygame.K_LEFT: (-1, 0), pygame.K_DOWN: (0, 1), pygame.K_RIGHT: (1, 0)}
 portal=Img.sndget("portal")
@@ -35,8 +30,8 @@ class Board(object):
     rscale=64
     phase=GRAVITY
     fruit=0
-    turbo=False
     biome=Biomes.Islands
+    controlled=None
     def __init__(self,size,scale=64):
         self.sx,self.sy=size
         self.t=[[[Tiles.Air(x,y)] for y in range(self.sy)] for x in range(self.sx)]
@@ -60,6 +55,7 @@ class Board(object):
                         self.goal_test()
                     else:
                         self.phase=INPUT
+                        [t.post_grav(self) for t in self.updatables]
                         self.goal_test()
                         state=self.state
                         if state!=self.lstate:
@@ -73,24 +69,25 @@ class Board(object):
         else:
             for e in events:
                 if e.type==pygame.MOUSEBUTTONDOWN:
-                    nsh=[sh for sh in self.shs if (sh.x,sh.y)==(mx,my)]
-                    if nsh:
-                        self.shead.selected=False
-                        self.shead=nsh[0]
-                        self.shead.selected = True
-                        break
-                    else:
-                        for t in self.get_ts(mx,my):
-                            if t.interactive and t.interact(self,e.button):
+                    for t in self.get_ts(mx,my):
+                        if t.interactive:
+                            if t.interactive==2:
+                                self.controlled.selected=False
+                                self.controlled=t
+                                self.controlled.selected=True
+                            elif t.interact(self,e.button):
                                 self.tcool = speed
                                 self.phase = GRAVITY
+                                [t.pre_grav(self) for t in self.updatables]
                                 self.goal_test()
                                 break
                 if e.type==pygame.KEYDOWN:
                     if e.key in kconv.keys():
-                        if self.shead.move(self,*kconv[e.key]):
+                        kx,ky=kconv[e.key]
+                        if self.controlled.move(kx,ky,self):
                             self.tcool=speed
                             self.phase=GRAVITY
+                            [t.pre_grav(self) for t in self.updatables]
                             self.goal_test()
                             break
                     elif e.key==pygame.K_r:
@@ -158,7 +155,7 @@ class Board(object):
         if self.phase==EXPLODING:
             exp.play()
         return grav
-    def snake_push(self,pshape,dx,dy,snake):
+    def push(self, pshape, dx, dy, snake=None):
         cgroup = pshape.tiles[:]
         spiked=set()
         spiking=set()
@@ -167,9 +164,9 @@ class Board(object):
             if not self.in_world(cx+dx, cy+dy):
                 break
             for ot in self.get_ts(cx+dx, cy+dy):
-                if ot in cgroup or ot is snake.tiles[0]:
+                if ot in cgroup or snake and ot is snake.tiles[0]:
                     continue
-                elif ot in snake.tiles:
+                elif snake and ot in snake.tiles:
                     break
                 elif ot.gshape:
                     if ot.spiky and c.spikable:
@@ -199,14 +196,6 @@ class Board(object):
                     self.move(ct, dx, dy)
                 return True
         return False
-    def execute_move(self,move):
-        snum,(dx,dy)=move
-        self.shs[snum].move(self, dx,dy)
-        if self.turbo:
-            self.history.append(((snum,(dx,dy)),self.state))
-        self.goal_test()
-        while self.grav():
-            self.goal_test()
     def in_world(self,x,y):
         return 0<=x<self.sx and 0<=y<self.sy
     def get_ts(self,x,y):
@@ -244,8 +233,6 @@ class Board(object):
         else:
             self.sy += 1 if big else -1
     def re_img(self):
-        if self.turbo:
-            return None
         for ts in itertools.chain(*self.t):
             for t in ts:
                 t.re_img(self)
@@ -256,37 +243,26 @@ class Board(object):
                     self.goals.remove(g)
                     for s in g.gshape.tiles:
                         self.dest(s)
-                    if g in self.shs:
-                        self.shs.remove(g)
-                    if not self.turbo:
-                        portal.play()
-        self.goals=[g for g in self.goals if not g.satisfied(self)]
-        if not len(self.goals):
+                    portal.play()
+        if all(g.satisfied(self) for g in self.goals):
             raise GameEnd(False,"WIN")
-    def prepare(self,game=True):
-        self.shs=[]
+    def prepare(self):
         self.goals=[]
-        self.game=game
+        self.updatables=[]
+        self.game=True
         for t in self.itertiles():
-            if t.name=="SnakeHead":
-                self.shs.append(t)
-                t.selected=False
+            if t.interactive==2 and not self.controlled:
+                self.controlled=t
             elif t.name=="Fruit":
                 self.fruit+=1
             if t.goal:
                 self.goals.append(t)
-        try:
-            self.shead=self.shs[0]
-        except IndexError:
-            raise RuntimeError, "NO SNAKES IN LEVEL"
-        self.shead.selected=True
-        if game:
-            self.re_img()
-            self.lstate=self.state
-            self.biome=self.biome()
-        else:
-            self.turbo=True
-            self.history=[]
+            if t.updates:
+                self.updatables.append(t)
+        self.controlled.selected=True
+        self.re_img()
+        self.lstate=self.state
+        self.biome=self.biome()
     @property
     def scale(self):
         return self.rscale
@@ -298,29 +274,6 @@ class Board(object):
     @property
     def state(self):
         return ";".join(t.state for t in self.itertiles() if t.state)
-class Solver(object):
-    def __init__(self,board):
-        board.prepare(False)
-        self.states=deque([board])
-        self.past_states={board.state}
-        self.best_solution=None
-    def update(self):
-        if self.states:
-            cb=self.states.popleft()
-            for move in itertools.product(xrange(len(cb.shs)),D.dirs):
-                nb=deepcopy(cb)
-                try:
-                    nb.execute_move(move)
-                except GameEnd as ge:
-                    if not ge.fail:
-                        raise Solution([m for m,s in nb.history])
-                    else:
-                        continue
-                if nb.state not in self.past_states:
-                    self.states.appendleft(nb)
-                    self.past_states.add(nb.state)
-        else:
-            raise ImpossibleException
 
 
 

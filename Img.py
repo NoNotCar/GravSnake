@@ -115,7 +115,7 @@ def imgstrip4fs(fil,ws):
 def imgrot(i):
     imgs=[i]
     for n in range(3):
-        imgs.append(pygame.transform.rotate(i,-90*n-90))
+        imgs.append(ScaledImage(pygame.transform.rotate(i[0],-90*n-90)))
     return imgs
 def irot(i,n):
     return ScaledImage(pygame.transform.rotate(i.img,-90*n))

@@ -1,5 +1,5 @@
 import Img
-import Tiles
+import Tiles, Interactives
 import Snake
 import Direction as D
 class ExternalMethod(Exception):
@@ -45,6 +45,7 @@ class Placer(object):
     multi=False
     contiguous=True
     continous=True
+    selicon=False
     def place(self,b,tpos):
         pass
     def dest(self,b,tpos):
@@ -105,14 +106,14 @@ class SnakePlacer(Placer):
         tx,ty=tpos[-1]
         sh=self.head(tx,ty,snake)
         b.spawn(sh)
-class SnakeFlipper(Placer):
-    img=bimg4("FlipSnake")
-    continous = False
-    def place(self,b,tpos):
-        for t in b.get_ts(*tpos):
-            if "Snake" in t.name and t.grav:
-                t.snake.grav=-t.grav
-                break
+# class SnakeFlipper(Placer):
+#     img=bimg4("FlipSnake")
+#     continous = False
+#     def place(self,b,tpos):
+#         for t in b.get_ts(*tpos):
+#             if "Snake" in t.name and t.grav:
+#                 t.snake.grav=-t.grav
+#                 break
 class BlockPlacer(Placer):
     multi = True
     contiguous = False
@@ -136,4 +137,29 @@ class CheesePlacer(BlockPlacer):
     img = Img.imgstripx("Tiles/Cheese")[0]
     bc=Tiles.Cheese
     sc=Tiles.GravShape
-
+class JellyPlacer(BlockPlacer):
+    imgs = [Interactives.Jelly.uts[n][0,0,0,0] for n in range(4)]
+    col=0
+    def place(self,b,tpos):
+        block=Tiles.GravShape()
+        for n,(tx,ty) in enumerate(tpos):
+            b.spawn(Interactives.Jelly(tx,ty,block,self.col))
+        b.re_img()
+    def scroll(self,d):
+        self.col += d
+        self.col %= 4
+    @property
+    def img(self):
+        return self.imgs[self.col]
+class Rotator(Placer):
+    img=bimg4("Rotate")
+    continous = False
+    selicon = True
+    def place(self,b,tpos):
+        for t in b.get_ts(*tpos):
+            if "Snake" in t.name and t.grav:
+                t.snake.grav=-t.grav
+                break
+            if t.name=="XSwitch":
+                t.r+=1
+                t.r%=4

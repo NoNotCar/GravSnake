@@ -24,6 +24,8 @@ def add_vs(*vs):
     return tuple(sum(c) for c in zip(*vs))
 def dist(v1,v2):
     return sum((v1[n]-v2[n])**2 for n in range(len(v1)))**0.5
+def xydist(v1,v2):
+    return sum(abs(v1[n]-v2[n]) for n in range(len(v1)))
 def offsetpos(d,x,y,m=1):
     dire = get_dir(d)
     return x + dire[0]*m, y + dire[1]*m

@@ -17,7 +17,9 @@ class Tile(object):
     goal=False
     portals=False
     interactive=False
+    selected=False
     pushdirs=[]
+    updates=False
     def __init__(self,x,y):
         self.x,self.y=x,y
     def re_img(self,b,lstart=True):
@@ -44,6 +46,14 @@ class Tile(object):
         pass
     def satisfied(self,b):
         return False
+    def move(self,dx,dy,b):
+        return False
+    def update(self,b):
+        pass
+    def pre_grav(self,b):
+        return self.update(b)
+    def post_grav(self,b):
+        return self.update(b)
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)
