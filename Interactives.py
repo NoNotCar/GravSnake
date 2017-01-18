@@ -1,4 +1,4 @@
-from Tiles import Tile,Block
+from Tiles import Tile,Block,GravShape
 import Img
 import Direction as D
 switch=Img.sndget("switch")
@@ -113,5 +113,37 @@ class Jelly(Block):
     @property
     def state(self):
         return "J"+str(self.col)+",".join((str(self.x),str(self.y)))
-
+class Penguin(Tile):
+    interactive = 2
+    goal = True
+    valuable = True
+    portals = True
+    imgs=Img.imgstripx("Penguin")
+    name="Penguin"
+    spikable = True
+    d=0
+    def __init__(self,x,y):
+        Tile.__init__(self,x,y)
+        self.gshape=GravShape(self)
+    def move(self,dx,dy,b):
+        if dx:
+            self.d=dx
+            for t in b.get_ts(self.x+dx,self.y):
+                if t.solid and (dx,0) in t.pushdirs:
+                    if t.push(b):
+                        b.move(self,dx,dy)
+                        return True
+                    else:
+                        error.play()
+                        return False
+            if b.push(self.gshape,dx,dy):
+                return True
+        error.play()
+        return False
+    @property
+    def state(self):
+        return "Peng"+",".join((str(self.x),str(self.y)))
+    @property
+    def img(self):
+        return self.imgs[(self.d==-1)+self.selected*2]
 
