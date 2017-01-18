@@ -110,5 +110,8 @@ class Jelly(Block):
     @property
     def ut(self):
         return self.uts[self.col]
+    @property
+    def state(self):
+        return "J"+str(self.col)+",".join((str(self.x),str(self.y)))
 
 
