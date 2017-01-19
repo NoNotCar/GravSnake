@@ -20,7 +20,7 @@ kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
 portal=Img.sndget("portal")
 exp=Img.sndget("exp")
 speed=5
-musics=["Overworld"]
+musics=["Overworld","Mars"]
 class Board(object):
     tcool=0
     game=False

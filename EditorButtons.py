@@ -1,10 +1,14 @@
 import Img
-import Tiles, Interactives
+import Tiles, Interactives,Board
 import Snake
 import Direction as D
 class ExternalMethod(Exception):
     def __init__(self,task):
         self.task=task
+musbase=Img.imgx("Music/Icons/Base")
+musicons=[Img.imgx("Music/Icons/"+m) for m in Board.musics]
+for m in musicons:
+    m.blit(musbase,(0,0))
 def bimg4(fil):
     return Img.imgx("Buttons/" + fil)
 class Button(object):
@@ -39,7 +43,15 @@ class ExternalButton(Button):
         self.task=task
     def on_click(self,mb,board):
         raise ExternalMethod(self.task)
-
+class MusicButton(Button):
+    m=Board.musics.index("Overworld")
+    def on_click(self,mb,board):
+        self.m+=1
+        self.m%=len(Board.musics)
+        board.music=Board.musics[self.m]
+    @property
+    def img(self):
+        return musicons[self.m]
 class Placer(object):
     img=None
     multi=False
