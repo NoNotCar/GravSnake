@@ -72,7 +72,8 @@ class Board(object):
                     for t in self.get_ts(mx,my):
                         if t.interactive:
                             if t.interactive==2:
-                                self.controlled.selected=False
+                                if self.controlled:
+                                    self.controlled.selected=False
                                 self.controlled=t
                                 self.controlled.selected=True
                             elif t.interact(self,e.button):
@@ -81,7 +82,7 @@ class Board(object):
                                 [t.pre_grav(self) for t in self.updatables]
                                 self.goal_test()
                                 break
-                if e.type==pygame.KEYDOWN:
+                if self.controlled and e.type==pygame.KEYDOWN:
                     if e.key in kconv.keys():
                         kx,ky=kconv[e.key]
                         if self.controlled.move(kx,ky,self):
@@ -243,6 +244,8 @@ class Board(object):
                     self.goals.remove(g)
                     for s in g.gshape.tiles:
                         self.dest(s)
+                        if s is self.controlled:
+                            self.controlled=None
                     portal.play()
         if all(g.satisfied(self) for g in self.goals):
             raise GameEnd(False,"WIN")
@@ -259,7 +262,8 @@ class Board(object):
                 self.goals.append(t)
             if t.updates:
                 self.updatables.append(t)
-        self.controlled.selected=True
+        if self.controlled:
+            self.controlled.selected=True
         self.re_img()
         self.lstate=self.state
         self.biome=self.biome()

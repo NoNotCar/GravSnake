@@ -163,3 +163,31 @@ class Rotator(Placer):
             if t.name=="XSwitch":
                 t.r+=1
                 t.r%=4
+class WMTerrainPlacer(Placer):
+    def __init__(self,tclass):
+        self.tc=tclass
+        self.img=tclass().img
+    def place(self,wm,tpos):
+        t=wm.get_t(*tpos)
+        if not t or not isinstance(t,self.tc):
+            wm.terrain[tpos[0]][tpos[1]]=self.tc()
+            wm.re_img()
+    def dest(self,wm,tpos):
+        t = wm.get_t(*tpos)
+        if t:
+            wm.terrain[tpos[0]][tpos[1]]=None
+            wm.re_img()
+class WMPathPlacer(Placer):
+    def __init__(self,pclass):
+        self.pc=pclass
+        self.img=pclass().img
+    def place(self,wm,tpos):
+        p=wm.get_p(*tpos)
+        if not p or not isinstance(p,self.pc):
+            wm.paths[tpos[0]][tpos[1]]=self.pc()
+            wm.re_img()
+    def dest(self,wm,tpos):
+        p = wm.get_p(*tpos)
+        if p:
+            wm.paths[tpos[0]][tpos[1]]=None
+            wm.re_img()
