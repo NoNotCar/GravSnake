@@ -78,6 +78,7 @@ while True:
                             error.play()
                             continue
                         run(pb,screen,ss,r)
+                        pygame.mixer.music.stop()
                     elif m.task=="New":
                         b=Board.Board((b.sx,b.sy),b.scale)
                         for im in Img.imss:

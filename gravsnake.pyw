@@ -75,6 +75,7 @@ while True:
                 gr = screen.get_rect()
                 r.center = gr.center
         if run(b,screen,ss,r):
+            pygame.mixer.music.stop()
             break
     for im in Img.imss:
         im.reload()
