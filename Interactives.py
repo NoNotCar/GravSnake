@@ -95,14 +95,17 @@ class Jelly(Block):
         self.sat=True
         return True
     def post_grav(self,b):
+        stuck=False
         if not self.sat:
             for g in b.goals:
                 if g.name=="Jelly" and g.col==self.col and g not in self.gshape.tiles and D.xydist((self.x,self.y),(g.x,g.y))==1:
                     self.gshape.tiles.append(g)
                     g.gshape=self.gshape
-                    stick.play()
-                    self.re_img(b)
-                    g.re_img(b)
+                    if not stuck:
+                        stick.play()
+                        stuck=True
+        if stuck:
+            b.re_img()
     def draw(self,b,screen):
         tpos=self.x*b.scale,self.y*b.scale
         screen.blit(self.img[b.iscale],tpos)
