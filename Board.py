@@ -36,7 +36,7 @@ class Board(object):
     music="Overworld"
     def __init__(self,size,scale=64):
         self.sx,self.sy=size
-        self.t=[[[Tiles.Air(x,y)] for y in range(self.sy)] for x in range(self.sx)]
+        self.t=[[[] for _ in range(self.sy)] for _ in range(self.sx)]
         self.re_img()
         self.scale=scale
     def render(self,screen):
@@ -222,10 +222,10 @@ class Board(object):
     def resize(self,h,big):
         for array in self.t,:
             if h and big:
-                array.append([[Tiles.Air(self.sx,y)] for y in range(self.sy)])
+                array.append([[] for _ in range(self.sy)])
             elif big:
                 for x,c in enumerate(array):
-                    c.append([Tiles.Air(x,self.sy)])
+                    c.append([])
             elif h:
                 array.pop()
             else:

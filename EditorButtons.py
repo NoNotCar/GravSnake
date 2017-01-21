@@ -75,7 +75,7 @@ class TerrainPlacer(Placer):
         self.img=tclass(0,0).img
     def place(self,b,tpos):
         ts=list(b.get_ts(*tpos))
-        if len(ts)>1 or not isinstance(ts[0],self.tc):
+        if not ts or len(ts)>1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
             b.re_img()
 class NTerrainPlacer(Placer):
@@ -88,7 +88,7 @@ class NTerrainPlacer(Placer):
     def place(self,b,tpos):
         tx,ty=tpos
         ts=list(b.get_ts(*tpos))
-        if len(ts)>1 or not isinstance(ts[0],self.tc):
+        if not ts or len(ts)>1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(tx,ty,self.n,*self.args)]
             b.re_img()
     def scroll(self,d):

@@ -73,10 +73,7 @@ class UltraTile(Tile):
     def img(self):
         return self.ut[self.corners]
 
-class Air(Tile):
-    solid = False
-    def draw(self,b,screen):
-        pass
+
 class Dirt(UltraTile):
     ut=UltraTiles("Tiles/Dirt")
     name="Dirt"
