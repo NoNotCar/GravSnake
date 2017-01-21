@@ -7,7 +7,7 @@ def check_exit(event):
         return True
 def run(b,screen,ss,r):
     undos=[deepcopy(b)]
-    back = (100, 255, 255)
+    back = b.biome.backcolour
     screen.fill(tuple(c * 0.5 for c in back))
     pygame.display.flip()
     while True:

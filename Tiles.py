@@ -1,7 +1,9 @@
-from Img import imgx,imgstripx,tilemapx, colcopy, RandomImageManager, UltraTiles,UTImageManager,sndget
+from Img import imgx,imgstripx,tilemapx, RandomImageManager, UltraTiles,UTImageManager
+import Img
 from random import randint,choice
 from copy import deepcopy
 import Direction as D
+cols=[(255,0,0),(0,0,255),(255,255,0),(0,255,0)]
 class Tile(object):
     solid=True
     gshape=None
@@ -54,6 +56,10 @@ class Tile(object):
         return self.update(b)
     def post_grav(self,b):
         return self.update(b)
+    def __eq__(self, other):
+        if isinstance(other,Tile):
+            return self.name==other.name
+        return False
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)
@@ -63,7 +69,7 @@ class UltraTile(Tile):
         for dset in D.icorners:
             corner=0
             for n,(tx,ty) in enumerate(D.iter_offsets(self.x,self.y,dset)):
-                if any(t.name==self.name for t in b.get_ts(tx,ty)) or not b.in_world(tx,ty):
+                if any(t==self for t in b.get_ts(tx,ty)) or not b.in_world(tx,ty):
                     corner+=n+1 if n<2 else 1
                 if n==1 and corner!=3:
                     break
@@ -72,14 +78,29 @@ class UltraTile(Tile):
     @property
     def img(self):
         return self.ut[self.corners]
-
-
 class Dirt(UltraTile):
     ut=UltraTiles("Tiles/Dirt")
     name="Dirt"
 class Snow(UltraTile):
     ut=UltraTiles("Tiles/Snow")
     name="Snow"
+class Hex(UltraTile):
+    uts=imgs=[Img.UltraTiles("Tiles/Hex",col) for col in cols]
+    for n,u in enumerate(uts):
+        for il in u.tiles:
+            for i in il:
+                Img.colswap(i,(192,192,192),Img.darker(cols[n]))
+    name="Hex"
+    def __init__(self,x,y,col=0):
+        UltraTile.__init__(self,x,y)
+        self.col=col
+    @property
+    def ut(self):
+        return self.uts[self.col]
+    def __eq__(self, other):
+        if isinstance(other,Hex):
+            return self.col==other.col
+        return False
 class Explosion(Tile):
     img=imgx("Exp")
     name="Exp"
