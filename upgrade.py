@@ -13,8 +13,8 @@ levels = os.listdir(Img.np(Img.loc + "Levels"))
 levels = [l[:-4] for l in levels if l[-4:] == ".lvl"]
 def upgrade(b):
     for t in b.itertiles():
-        if t.name=="Air":
-            b.dest(t)
+        if t.name=="Tile":
+            print t.__class__
 for l in levels:
     with open(Img.np(Img.loc + "Levels/%s.lvl" % l)) as s:
         b = pickle.load(s)

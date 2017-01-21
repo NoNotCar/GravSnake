@@ -56,7 +56,7 @@ class Tile(object):
         return self.update(b)
     def post_grav(self,b):
         return self.update(b)
-    def __eq__(self, other):
+    def same(self, other):
         if isinstance(other,Tile):
             return self.name==other.name
         return False
@@ -69,7 +69,7 @@ class UltraTile(Tile):
         for dset in D.icorners:
             corner=0
             for n,(tx,ty) in enumerate(D.iter_offsets(self.x,self.y,dset)):
-                if any(t==self for t in b.get_ts(tx,ty)) or not b.in_world(tx,ty):
+                if any(self.same(t) for t in b.get_ts(tx,ty)) or not b.in_world(tx,ty):
                     corner+=n+1 if n<2 else 1
                 if n==1 and corner!=3:
                     break
@@ -97,7 +97,7 @@ class Hex(UltraTile):
     @property
     def ut(self):
         return self.uts[self.col]
-    def __eq__(self, other):
+    def same(self, other):
         if isinstance(other,Hex):
             return self.col==other.col
         return False
@@ -179,6 +179,7 @@ class BGravShape(GravShape):
         self.iid=IM_BLOCK.register()
         self.tiles=[]
 class Block(UltraTile):
+    name="Block"
     def __init__(self,x,y,gshape):
         UltraTile.__init__(self,x,y)
         self.gshape=gshape

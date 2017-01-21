@@ -17,6 +17,8 @@ class Button(object):
         pass
     def draw(self,screen,board,x,y):
         screen.blit(self.img[3],(x,y))
+    def reload(self,b):
+        pass
 class Resizer(Button):
     imgs=bimg4("Height"),bimg4("Width")
     def __init__(self,h):
@@ -49,6 +51,8 @@ class MusicButton(Button):
         self.m+=1
         self.m%=len(Board.musics)
         board.music=Board.musics[self.m]
+    def reload(self,b):
+        self.m=Board.musics.index(b.music)
     @property
     def img(self):
         return musicons[self.m]
@@ -62,8 +66,8 @@ class Placer(object):
         pass
     def dest(self,b,tpos):
         ts = list(b.get_ts(*tpos))
-        if len(ts) > 1 or not isinstance(ts[0], Tiles.Air):
-            b.t[tpos[0]][tpos[1]] = [Tiles.Air(*tpos)]
+        if ts:
+            b.t[tpos[0]][tpos[1]] = []
             for t in ts:
                 t.on_dest(b)
             b.re_img()
@@ -75,7 +79,7 @@ class TerrainPlacer(Placer):
         self.img=tclass(0,0).img
     def place(self,b,tpos):
         ts=list(b.get_ts(*tpos))
-        if not ts or len(ts)>1 or not isinstance(ts[0],self.tc):
+        if len(ts)!=1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(*tpos)]
             b.re_img()
 class NTerrainPlacer(Placer):
@@ -88,7 +92,7 @@ class NTerrainPlacer(Placer):
     def place(self,b,tpos):
         tx,ty=tpos
         ts=list(b.get_ts(*tpos))
-        if not ts or len(ts)>1 or not isinstance(ts[0],self.tc):
+        if len(ts)!=1 or not isinstance(ts[0],self.tc):
             b.t[tpos[0]][tpos[1]]=[self.tc(tx,ty,self.n,*self.args)]
             b.re_img()
     def scroll(self,d):

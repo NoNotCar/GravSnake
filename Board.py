@@ -20,7 +20,7 @@ kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
 portal=Img.sndget("portal")
 exp=Img.sndget("exp")
 speed=5
-musics=["Overworld","Mars","Snow"]
+musics=["Overworld","Mars","Snow","Glowsphere"]
 class Board(object):
     tcool=0
     game=False
@@ -33,7 +33,6 @@ class Board(object):
     fruit=0
     biome=Biomes.Islands
     controlled=None
-    music="Overworld"
     def __init__(self,size,scale=64):
         self.sx,self.sy=size
         self.t=[[[] for _ in range(self.sy)] for _ in range(self.sx)]
@@ -269,7 +268,7 @@ class Board(object):
         self.re_img()
         self.lstate=self.state
         self.biome=self.biome()
-        Img.musplay(self.music)
+        Img.musplay(self.biome.music)
     @property
     def scale(self):
         return self.rscale
