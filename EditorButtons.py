@@ -1,6 +1,6 @@
 import Img
 import Tiles, Interactives,Board
-import Snake
+import Biomes
 import Direction as D
 class ExternalMethod(Exception):
     def __init__(self,task):
@@ -45,17 +45,17 @@ class ExternalButton(Button):
         self.task=task
     def on_click(self,mb,board):
         raise ExternalMethod(self.task)
-class MusicButton(Button):
-    m=Board.musics.index("Overworld")
+class BiomeButton(Button):
+    b=Biomes.biomes.index(Biomes.Islands)
     def on_click(self,mb,board):
-        self.m+=1
-        self.m%=len(Board.musics)
-        board.music=Board.musics[self.m]
+        self.b+=1
+        self.b%=len(Biomes.biomes)
+        board.biome=Biomes.biomes[self.b]
     def reload(self,b):
-        self.m=Board.musics.index(b.music)
+        self.b=Biomes.biomes.index(b.biome)
     @property
     def img(self):
-        return musicons[self.m]
+        return Biomes.bimgs[self.b]
 class Placer(object):
     img=None
     multi=False

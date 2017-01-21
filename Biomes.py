@@ -32,4 +32,4 @@ class Alien(Biome):
         self.yp += 0.03
         self.yp %= tau
 biomes=Islands,Alien
-#bimgs=[Img.imgx("B_"+b.__name__) for b in biomes]
+bimgs=[Img.imgx("B_"+b.__name__) for b in biomes]

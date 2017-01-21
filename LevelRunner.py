@@ -21,7 +21,7 @@ def run(b,screen,ss,r):
                     b = deepcopy(undos[-1])
             ss.fill(back)
             mx, my = pygame.mouse.get_pos()
-            uc = b.update(es, (mx - r.left) // 64, (my - r.top) // 64)
+            uc = b.update(es, (mx - r.left) // b.rscale, (my - r.top) // b.rscale)
             if uc:
                 undos.append(uc)
                 if len(undos) > 100:

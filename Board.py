@@ -118,40 +118,48 @@ class Board(object):
             ocgroup=cgroup[:]
             failnofall=None
             g=s.tiles[0].grav
+            falling=True
             for c,cx,cy in ((c,c.x,c.y) for c in cgroup if c.is_face(0,g)):
                 for ot in self.get_ts(cx,cy+g):
                     if c in ocgroup:
                         if failnofall is None and any((c.spiky and ot.spikable,c.spikable and ot.spiky)):
                             failnofall=True
-                        elif not (failnofall is False) and ot.is_face(0,-g) and not any((c.spiky and ot.spikable,c.spikable and ot.spiky)):
+                        elif ot not in ocgroup and not (failnofall is False) and ot.is_face(0,-g) and not any((c.spiky and ot.spikable,c.spikable and ot.spiky)):
                             failnofall=False
                     if ot in cgroup:
                         continue
-                    elif ot in fixed and not failnofall:
-                        fixed.update(ocgroup)
-                        break
+                    elif ot in fixed:
+                        falling=False
+                        if not failnofall:
+                            break
                     elif ot.gshape and ot.grav==g:
                         cgroup.extend(ot.gshape.tiles)
                         continue
-                    elif ot.is_face(0,-g) and not failnofall:
-                        fixed.update(ocgroup)
-                        break
+                    elif ot.is_face(0,-g):
+                        falling = False
+                        if not failnofall:
+                            break
                 else:
                     continue
                 break
             else:
-                exps=set()
-                for ct in cgroup:
-                    e=self.move(ct,0,g)
-                    if e:
-                        exps|=set(e.gshape.tiles)
-                for e in exps:
-                    if self.in_world(e.x,e.y):
-                        self.dest(e)
-                        self.spawn(Tiles.Explosion(e.x,e.y))
-                        self.phase=EXPLODING
-                fixed.update(cgroup)
-                grav=True
+                if falling:
+                    #gravity activated
+                    exps=set()
+                    for ct in cgroup:
+                        e=self.move(ct,0,g)
+                        if e:
+                            exps|=set(e.gshape.tiles)
+                    for e in exps:
+                        if self.in_world(e.x,e.y):
+                            self.dest(e)
+                            self.spawn(Tiles.Explosion(e.x,e.y))
+                            self.phase=EXPLODING
+                    fixed.update(cgroup)
+                    grav=True
+                    continue
+            #we didn't fall
+            fixed.update(ocgroup)
             if failnofall:
                 raise GameEnd(True, "FAIL")
         if self.phase==EXPLODING:
