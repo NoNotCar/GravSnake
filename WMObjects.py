@@ -31,12 +31,22 @@ class Snow(Terrain):
     name="Snow"
 class Path(object):
     ut = Img.UltraTiles("WMapPath")
+    but=Img.UltraTiles("WMapBridge")
+    bbits=Img.imgstripx("BridgeBit")
     eimg=ut[(0,0,0,0)]
     corners = (0, 0, 0, 0)
     revealed=1
     progress=1
+    bridge=False
+    bridgeends=(0,0,0,0)
     name="Path"
     def re_img(self, wm, x, y):
+        self.bridge=not wm.get_t(x,y)
+        if not self.bridge:
+            self.bridgeends = [0, 0, 0, 0]
+            for n, (tx, ty) in enumerate(D.iter_offsets(x, y)):
+                if wm.get_p(tx,ty):
+                    self.bridgeends[n]=not wm.get_t(tx,ty)
         corners = []
         for dset in D.icorners:
             corner = 0
@@ -51,17 +61,20 @@ class Path(object):
         self.corners = tuple(corners)
     @property
     def img(self):
-        return self.ut[self.corners]
+        return (self.but if self.bridge else self.ut)[self.corners]
     def draw(self,x,y,ss,b):
         if self.revealed:
             ss.blit(self.img[b.iscale],(x*b.rscale,y*b.rscale))
+            if not self.bridge:
+                for n,br in enumerate(self.bridgeends):
+                    if br:
+                        ss.blit(self.bbits[n][b.iscale], (x * b.rscale, y * b.rscale))
 class Spawn(Path):
     limg=Img.imgx("WMapGo")
     eimg=limg
     progress=1
     def draw(self,x,y,ss,b):
-        if self.revealed:
-            ss.blit(self.img[b.iscale],(x*b.rscale,y*b.rscale))
+        Path.draw(self,x,y,ss,b)
         ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
 class Level(Spawn):
     progress=0
@@ -77,8 +90,7 @@ class Level(Spawn):
     def limg(self):
         return self.limgs[self.progress+self.revealed]
     def draw(self,x,y,ss,b):
-        if self.revealed:
-            ss.blit(self.img[b.iscale],(x*b.rscale,y*b.rscale))
+        Path.draw(self, x, y, ss, b)
         ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
         if not b.game:
             Img.bcentrepos(Img.sfont,self.lname,ss,(x*b.rscale+b.rscale//2,y*b.rscale))
