@@ -140,3 +140,6 @@ $RECYCLE.BIN/
 
 #pycharm
 .idea
+
+#save files
+.sav
