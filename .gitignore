@@ -142,4 +142,4 @@ $RECYCLE.BIN/
 .idea
 
 #save files
-.sav
+*.sav
