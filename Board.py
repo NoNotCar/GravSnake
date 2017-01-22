@@ -275,7 +275,7 @@ class Board(object):
             self.controlled.selected=True
         self.re_img()
         self.lstate=self.state
-        self.biome=self.biome()
+        self.biome=self.biome(self)
         Img.musplay(self.biome.music)
     @property
     def scale(self):

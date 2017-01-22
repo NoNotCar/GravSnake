@@ -8,8 +8,11 @@ import EditorButtons as B
 import pickle
 import WMObjects
 import Direction as D
-from random import choice
+from LevelRunner import run_wm,lselect
+import os
 from copy import deepcopy
+levels = os.listdir(Img.np(Img.loc + "Levels"))
+levels = [l[:-4] for l in levels if l[-4:] == ".lvl"]
 size=(12,12)
 scale=64
 b=WorldMap.WorldMap(size)
@@ -22,7 +25,7 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
-placers=[B.WMTerrainPlacer(WMObjects.Dirt),B.WMPathPlacer(WMObjects.Path)]
+placers=[B.WMTerrainPlacer(WMObjects.Dirt),B.WMPathPlacer(WMObjects.Path),B.WMPathPlacer(WMObjects.Spawn),B.WMLevelPlacer(WMObjects.Level)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -62,20 +65,15 @@ while True:
                         flip=True
                 except B.ExternalMethod as m:
                     pass
-                    # if m.task=="Play":
-                    #     pb=deepcopy(b)
-                    #     try:
-                    #         pb.prepare()
-                    #     except RuntimeError:
-                    #         del pb
-                    #         error.play()
-                    #         continue
-                    #     run(pb,screen,ss,r)
-                    # elif m.task=="New":
-                    #     b=Board.Board((b.sx,b.sy),b.scale)
-                    #     for im in Img.imss:
-                    #         im.reload()
-                    # flip=True
+                    if m.task=="Play":
+                        pb=deepcopy(b)
+                        pb.prepare()
+                        run_wm(pb,screen,ss,r)
+                    elif m.task=="New":
+                        b=WorldMap.WorldMap((b.sx,b.sy),b.scale)
+                        for im in Img.imss:
+                            im.reload()
+                    flip=True
             elif pr.collidepoint(mx,my):
                 nsel=(my-pr.top)//64+mx//64*16
                 selected=nsel if nsel<len(placers) else selected
@@ -112,27 +110,32 @@ while True:
                     savename+=u.upper() if kmods&pygame.KMOD_LSHIFT else u
                 flip=True
         check_exit(e)
-    if flip:
-        screen.fill((100,100,100))
-    gp=pygame.mouse.get_pressed()
+    gp = pygame.mouse.get_pressed()
     psel = placers[selected]
-    if (gp[0] or gp[2]) and (psel.continous or any((e.type==pygame.MOUSEBUTTONDOWN for e in es))):
+    if (gp[0] or gp[2]) and (psel.continous or any((e.type == pygame.MOUSEBUTTONDOWN for e in es))):
         if r.collidepoint(mx, my):
             ppos = ((mx - r.left) // scale, (my - r.top) // scale)
             if psel.multi and gp[0]:
-                if ppos not in multipos and (not multipos or D.dist(ppos,multipos[-1])<=1 or not psel.contiguous):
+                if ppos not in multipos and (not multipos or D.dist(ppos, multipos[-1]) <= 1 or not psel.contiguous):
                     multipos.append(ppos)
             else:
                 if gp[0]:
-                    psel.place(b, ppos)
+                    try:
+                        psel.place(b, ppos)
+                    except B.ExternalMethod as em:
+                        if em.task == "SelectLevel":
+                            psel.lplace(b, ppos, lselect(screen, levels))
+                            flip = True
                 else:
                     if multipos:
-                        multipos=[]
+                        multipos = []
                     psel.dest(b, ppos)
     elif multipos:
         if psel.multi:
             psel.place(b,multipos)
         multipos=[]
+    if flip:
+        screen.fill((100,100,100))
     ss.fill((200,200,200))
     bss.fill((150,150,150))
     pss.fill((250,250,250))

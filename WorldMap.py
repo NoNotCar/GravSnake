@@ -1,14 +1,26 @@
+import WMObjects
+import Img
+import Direction as D
+mm=Img.imgx("MapMan")
+MOVEMENT=0
+UNLOCK=1
 class WorldMap(object):
     iscale = 3
     rscale = 64
     back=(0,148,255)
+    game=False
+    px,py=0,0
+    state=UNLOCK
+    up=0
+    speed=5
+    acool=speed
     def __init__(self, size, scale=64):
         self.sx, self.sy = size
         self.paths = [[None for y in range(self.sy)] for x in range(self.sx)]
         self.terrain=[[None for y in range(self.sy)] for x in range(self.sx)]
         self.re_img()
         self.scale = scale
-
+        self.unodes=[]
     def render(self, screen):
         screen.fill(self.back)
         for x,y in self.iterlocs():
@@ -16,9 +28,17 @@ class WorldMap(object):
             if t:
                 screen.blit(t.img[self.iscale],(x*self.scale,y*self.scale))
         for p,x,y in self.iterpaths(True):
-            screen.blit(p.img[self.iscale], (x * self.scale, y * self.scale))
+            p.draw(x,y,screen,self)
+        if self.game:
+            screen.blit(mm[self.iscale],(self.px*self.scale,self.py*self.scale))
     def update(self, events, mx, my):
-        pass
+        if self.state:
+            if self.acool:
+                self.acool-=1
+            else:
+                self.acool=self.speed
+                if self.state==UNLOCK:
+                    self.unlock()
     def iterlocs(self):
         for x in range(self.sx):
             for y in range(self.sy):
@@ -86,6 +106,30 @@ class WorldMap(object):
         for p,x,y in self.iterpaths(True):
             p.re_img(self,x,y)
 
+    def prepare(self):
+        for p,x,y in self.iterpaths(True):
+            p.revealed=False
+        for p, x, y in self.iterpaths(True):
+            if p.__class__==WMObjects.Spawn:
+                self.px, self.py =x,y
+                self.unodes.append((x,y))
+        self.re_img()
+        self.game=True
+    def unlock(self):
+        try:
+            nx,ny=self.unodes[self.up]
+        except IndexError:
+            self.state=MOVEMENT
+            self.unodes=[]
+            self.up=0
+            return None
+        p=self.get_p(nx,ny)
+        if p:
+            p.revealed=True
+            if p.progress:
+                self.unodes.extend(p for p in D.iter_offsets(nx,ny) if p not in self.unodes)
+        self.up+=1
+        self.re_img()
     @property
     def scale(self):
         return self.rscale
@@ -95,3 +139,4 @@ class WorldMap(object):
         self.rscale = n
         self.iscale = self.scale // 16 - 1
         self.ascale = self.scale // 16
+

@@ -196,11 +196,26 @@ class WMTerrainPlacer(Placer):
 class WMPathPlacer(Placer):
     def __init__(self,pclass):
         self.pc=pclass
-        self.img=pclass().img
+        self.img=pclass.eimg
     def place(self,wm,tpos):
         p=wm.get_p(*tpos)
         if not p or not isinstance(p,self.pc):
             wm.paths[tpos[0]][tpos[1]]=self.pc()
+            wm.re_img()
+    def dest(self,wm,tpos):
+        p = wm.get_p(*tpos)
+        if p:
+            wm.paths[tpos[0]][tpos[1]]=None
+            wm.re_img()
+class WMLevelPlacer(WMPathPlacer):
+    continous = False
+    def place(self,wm,tpos):
+        p=wm.get_p(*tpos)
+        if not p or not isinstance(p,self.pc):
+            raise ExternalMethod("SelectLevel")
+    def lplace(self,wm,tpos,lname):
+        if lname:
+            wm.paths[tpos[0]][tpos[1]] = self.pc(lname)
             wm.re_img()
     def dest(self,wm,tpos):
         p = wm.get_p(*tpos)

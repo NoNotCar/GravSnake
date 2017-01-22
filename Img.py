@@ -15,6 +15,7 @@ class ScaledImage(object):
     def __init__(self,img):
         self.imgs=(img,)+tuple(xn(img,n) for n in (2,3,4))
         self.img=img
+        self.h,self.w=img.get_height(),img.get_width()
     def blit(self,other,tpos,**kwargs):
         for n,i in enumerate(self.imgs):
             i.blit(other.imgs[n],(tpos[0]*(n+1),tpos[1]*(n+1)),**kwargs)
