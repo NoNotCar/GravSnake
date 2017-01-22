@@ -1,7 +1,8 @@
 import pygame,sys
 from copy import deepcopy
-import Board,Img
+import Board,Img,WorldMap
 clock=pygame.time.Clock()
+downscale={64:48,48:32,32:16,16:16}
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
         return True
@@ -15,7 +16,7 @@ def run(b,screen,ss,r):
             es = pygame.event.get()
             for e in es:
                 if check_exit(e):
-                    return True
+                    return True,False
                 if e.type == pygame.KEYDOWN and e.key == pygame.K_LSHIFT and len(undos) - 1:
                     undos.pop()
                     b = deepcopy(undos[-1])
@@ -42,9 +43,9 @@ def run(b,screen,ss,r):
                 screen.fill(tuple(c * 0.5 for c in back))
                 pygame.display.flip()
             elif not fail:
-                return True
+                return True,True
             else:
-                break
+                return False,False
 def run_wm(wm, screen, ss, r):
     back = wm.back
     screen.fill(tuple(c * 0.5 for c in back))
@@ -55,13 +56,47 @@ def run_wm(wm, screen, ss, r):
             if check_exit(e):
                 return True
         mx, my = pygame.mouse.get_pos()
-        wm.update(es, (mx - r.left) // wm.rscale, (my - r.top) // wm.rscale)
+        try:
+            wm.update(es, (mx - r.left) // wm.rscale, (my - r.top) // wm.rscale)
+        except WorldMap.RunLevel as e:
+            while True:
+                scale = 64
+                b=deepcopy(e.b)
+                b.prepare()
+                b.scale = scale
+                size = b.sx, b.sy
+                lr = pygame.Rect(0, 0, size[0] * scale, size[1] * scale)
+                gr = screen.get_rect()
+                lr.center = gr.center
+                while True:
+                    try:
+                        lss = screen.subsurface(lr)
+                        break
+                    except ValueError:
+                        scale = downscale[scale]
+                        b.scale = scale
+                        lr = pygame.Rect(0, 0, size[0] * scale, size[1] * scale)
+                        lr.center = gr.center
+                rcode=run(b, screen, lss, lr)
+                if rcode[0]:
+                    pygame.mixer.music.stop()
+                    if not rcode[1]:
+                        wm.cancel()
+                    for im in Img.imss:
+                        im.reload()
+                    break
+            screen.fill(tuple(c * 0.5 for c in back))
+            pygame.display.flip()
         wm.render(ss)
         # sr=Img.bcentrex(Img.savfont, lname, screen, screen.get_height() - 32, (0, 0, 0))
         pygame.display.update(r)
         clock.tick(60)
-def lselect(screen,levels):
-    maxscroll = len(levels) * 64 + 64 - screen.get_height()
+def lselect(screen,levels=(),worldmaps=()):
+    maxscroll = len(levels) * 64+len(worldmaps)*64 + 64*(bool(levels)+bool(worldmaps)) - screen.get_height()
+    selections=[]
+    for t,l in (("#WORLDMAPS",worldmaps),("#LEVELS",levels)):
+        if l:
+            selections.extend([t]+l)
     scrollspeed = 32
     scroll = 0
     clevel = None
@@ -82,20 +117,22 @@ def lselect(screen,levels):
                         scroll = 0
                 else:
                     mpos = pygame.mouse.get_pos()
-                    selected = (mpos[1] + scroll) // 64 - 1
-                    if selected >= 0 and len(levels) > selected:
-                        clevel = levels[selected]
+                    selected = selections[(mpos[1] + scroll) // 64]
+                    if selected[0]!="#":
+                        clevel = selected
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and scroll:
             scroll -= 4
         elif keys[pygame.K_DOWN] and scroll < maxscroll:
             scroll += 4
         screen.fill((200, 200, 200))
-        Img.bcentrex(Img.bfont, "SELECT LEVEL", screen, -16 - scroll)
-        for n, l in enumerate(levels):
+        for n, s in enumerate(selections):
             pygame.draw.rect(screen, (200, 200, 200) if n % 2 else (150, 150, 150),
                              pygame.Rect(0, n * 64 + 64 - scroll, screen.get_width(), 64))
-            Img.bcentrex(Img.savfont, l, screen, n * 64 + 80 - scroll)
+            if s[0]=="#":
+                Img.bcentrex(Img.bfont, s[1:], screen, n*64-16 - scroll)
+            else:
+                Img.bcentrex(Img.savfont, s, screen, n * 64 + 16 - scroll)
         clock.tick(60)
         pygame.display.flip()
     return clevel

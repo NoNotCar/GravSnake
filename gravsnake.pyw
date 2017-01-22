@@ -7,23 +7,25 @@ clock=pygame.time.Clock()
 import Img
 import pickle
 import Board
-from LevelRunner import run,lselect
+from LevelRunner import run,lselect,run_wm
 import os
 done=False
-levels = os.listdir(Img.np(Img.loc + "Levels"))
-levels = [l[:-4] for l in levels if l[-4:] == ".lvl"]
+saved = os.listdir(Img.np(Img.loc + "Levels"))
+levels = [l[:-4] for l in saved if l[-4:] == ".lvl"]
+worldmaps=[l[:-4] for l in saved if l[-4:] == ".gwm"]
 downscale={64:48,48:32,32:16,16:16}
 scale=64
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
         sys.exit()
 while True:
-    lname=lselect(screen,levels)
+    lname=lselect(screen,levels,worldmaps)
     if lname is None:
         sys.exit()
+    wm=lname in worldmaps
     while True:
         scale=64
-        with open(Img.np(Img.loc + "Levels/%s.lvl" % lname)) as s:
+        with open(Img.np(Img.loc + "Levels/%s%s" % (lname,(".gwm" if wm else ".lvl")))) as s:
             b = pickle.load(s)
             b.prepare()
             b.scale=scale
@@ -41,7 +43,10 @@ while True:
                 r = pygame.Rect(0, 0, size[0] * scale, size[1] * scale)
                 gr = screen.get_rect()
                 r.center = gr.center
-        if run(b,screen,ss,r):
+        if wm:
+            if run_wm(b,screen,ss,r):
+                sys.exit()
+        elif run(b,screen,ss,r)[0]:
             pygame.mixer.music.stop()
             break
     for im in Img.imss:

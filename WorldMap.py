@@ -1,9 +1,18 @@
 import WMObjects
 import Img
 import Direction as D
+import pygame
 mm=Img.imgx("MapMan")
 MOVEMENT=0
 UNLOCK=1
+COMPLETE=2
+lcomplete=Img.sndget("lcomplete")
+reveal=Img.sndget("beep")
+kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
+       pygame.K_UP: (0, -1), pygame.K_LEFT: (-1, 0), pygame.K_DOWN: (0, 1), pygame.K_RIGHT: (1, 0)}
+class RunLevel(Exception):
+    def __init__(self,b):
+        self.b=b
 class WorldMap(object):
     iscale = 3
     rscale = 64
@@ -39,6 +48,30 @@ class WorldMap(object):
                 self.acool=self.speed
                 if self.state==UNLOCK:
                     self.unlock()
+                    if self.state==UNLOCK:
+                        reveal.play()
+                elif self.state==COMPLETE:
+                    lcomplete.play()
+                    p=self.get_p(self.px,self.py)
+                    p.progress=1
+                    self.unodes=[(self.px,self.py)]
+                    self.state=UNLOCK
+                    self.unlock(True)
+        else:
+            for e in events:
+                if  e.type == pygame.KEYDOWN:
+                    if e.key in kconv.keys():
+                        kx, ky = kconv[e.key]
+                        tx,ty=self.px+kx,self.py+ky
+                        p=self.get_p(tx,ty)
+                        if p and p.revealed:
+                            self.px,self.py=tx,ty
+                    elif e.key==pygame.K_SPACE:
+                        p=self.get_p(self.px,self.py)
+                        if p and p.name=="Level":
+                            if not p.progress:
+                                self.state=COMPLETE
+                            raise RunLevel(p.b)
     def iterlocs(self):
         for x in range(self.sx):
             for y in range(self.sy):
@@ -115,7 +148,7 @@ class WorldMap(object):
                 self.unodes.append((x,y))
         self.re_img()
         self.game=True
-    def unlock(self):
+    def unlock(self,force=False):
         try:
             nx,ny=self.unodes[self.up]
         except IndexError:
@@ -124,12 +157,14 @@ class WorldMap(object):
             self.up=0
             return None
         p=self.get_p(nx,ny)
-        if p:
+        if p and (not p.revealed or force):
             p.revealed=True
             if p.progress:
                 self.unodes.extend(p for p in D.iter_offsets(nx,ny) if p not in self.unodes)
         self.up+=1
         self.re_img()
+    def cancel(self):
+        self.state=MOVEMENT
     @property
     def scale(self):
         return self.rscale
