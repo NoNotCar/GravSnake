@@ -27,6 +27,7 @@ class SnakeSeg(Tile):
     spikable = True
     dconv={1:0,2:1,4:2,8:3}
     valuable = True
+    i=0
     def __init__(self,x,y,bdir,fdir,snake):
         Tile.__init__(self, x, y)
         self.bdir,self.fdir=bdir,fdir
@@ -34,7 +35,7 @@ class SnakeSeg(Tile):
         snake.tiles.append(self)
         self.gshape=snake
     def is_face(self,dx,dy):
-        return (dx,dy) not in [D.dirs[self.dconv[d]] for d in (self.fdir,self.bdir) if d]
+        return (dx,dy) not in [D.dirs[d] for d in (self.fdir,self.bdir) if d]
     def on_dest(self,b):
         if b.game:
             raise RuntimeError,"SNEK DELETED IN GAME"
@@ -42,9 +43,11 @@ class SnakeSeg(Tile):
             for s in self.snake.tiles:
                 if not s is self:
                     b.dest(s)
+    def re_img(self,b,lstart=True):
+        self.i=sum(0 if d is None else 2**d for d in (self.bdir,self.fdir))
     @property
     def img(self):
-        return self.snake.tailimgs[self.fdir+self.bdir]
+        return self.snake.tailimgs[self.i]
     @property
     def grav(self):
         return self.snake.grav
@@ -96,17 +99,19 @@ class SnakeHead(Tile):
             return False
         if not eating:
             b.dest(snake.pop(0))
-            snake[0].bdir = 0
+            snake[0].bdir = None
+            snake[0].re_img(b)
         nd=D.dirs.index((dx, dy))
         snake.remove(self)
-        s=self.segclass(self.x,self.y,2**((self.d+2)%4) if len(snake) else 0,2**nd,self.snake)
+        s=self.segclass(self.x,self.y,(self.d+2)%4 if len(snake) else None,nd,self.snake)
+        s.re_img(b)
         snake.append(self)
         b.spawn(s)
         b.move(self,dx,dy)
         self.d=nd
         return True
     def is_face(self,dx,dy):
-        return (dx,dy) != D.dirs[(self.d+2)%4]
+        return (dx,dy) != D.get_dir(self.d+2)
     def draw(self,b,screen):
         tpos=self.x*b.scale,self.y*b.scale
         screen.blit(self.img[b.iscale],tpos)

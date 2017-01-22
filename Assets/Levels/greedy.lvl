@@ -81,7 +81,7 @@ p45
 g37
 sS'fdir'
 p46
-I2
+I1
 sS'y'
 p47
 I3
@@ -90,7 +90,7 @@ p48
 I2
 sS'bdir'
 p49
-I8
+I3
 sbag0
 (cSnake
 SnakeHead
@@ -113,14 +113,13 @@ I1
 sbasbsg45
 g37
 sg46
-I2
+I1
 sg47
 I3
 sg48
 I1
 sg49
-I0
-sbaa(lp55
+Nsbaa(lp55
 g0
 (cTiles
 Dirt
