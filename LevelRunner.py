@@ -1,8 +1,11 @@
 import pygame,sys
 from copy import deepcopy
+from random import randint,choice
 import Board,Img,WorldMap
 clock=pygame.time.Clock()
 downscale={64:48,48:32,32:16,16:16}
+fool=["IDIOT","FAILIURE","OH DEAR","OH DEARIE ME","INCOMPETENT","HAHA","FAIL","STUPID","FOOOOOOL"]
+yay=["HOORAH","SUPERB","SUCCESS","YOU WIN","AMAZING","PASS","10/10 WOULD PLAY AGAIN","COMPETENT","YAAAAAY"]
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
         return True
@@ -34,7 +37,11 @@ def run(b,screen,ss,r):
         except Board.GameEnd as e:
             fail = e.fail
             screen.fill((0, 0, 0) if fail else (255, 255, 0))
-            Img.bcentre(Img.bfont, "FOOL" if fail else "YAY", screen, col=(255, 255, 255) if fail else (0, 0, 0))
+            if fail:
+                msg="FOOL" if randint(0,3) else choice(fool)
+            else:
+                msg = "YAY" if randint(0, 3) else choice(yay)
+            Img.bcentre(Img.bfont, msg, screen, col=(255, 255, 255) if fail else (0, 0, 0))
             pygame.display.flip()
             pygame.time.wait(1000 if fail else 2000)
             if e.code == "FAIL":
