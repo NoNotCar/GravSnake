@@ -5,8 +5,8 @@ import itertools
 import Direction as D
 import Tiles
 import Biomes
-from collections import deque
 from copy import deepcopy
+spike=Img.sndget("spiked")
 white=(255,255,255)
 INPUT=0
 GRAVITY=1
@@ -161,11 +161,12 @@ class Board(object):
             #we didn't fall
             fixed.update(ocgroup)
             if failnofall:
+                spike.play()
                 raise GameEnd(True, "FAIL")
         if self.phase==EXPLODING:
             exp.play()
         return grav
-    def push(self, pshape, dx, dy, snake=None):
+    def push(self, pshape, dx, dy, snake=None,fail_deadly=False):
         cgroup = pshape.tiles[:]
         spiked=set()
         spiking=set()
@@ -205,6 +206,9 @@ class Board(object):
                 for ct in cgroup:
                     self.move(ct, dx, dy)
                 return True
+            elif fail_deadly:
+                spike.play()
+                raise GameEnd(True,"FAIL")
         return False
     def in_world(self,x,y):
         return 0<=x<self.sx and 0<=y<self.sy

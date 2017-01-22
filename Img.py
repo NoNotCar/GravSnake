@@ -154,6 +154,11 @@ def cxblit(source, dest, y, xoff=0):
     srect.centerx=drect.centerx+xoff
     srect.top=y
     return dest.blit(source,srect)
+def bcentrepos(font,text,surface,cpos,col=(0,0,0)):
+    render = font.render(str(text), True, col)
+    textrect = render.get_rect()
+    textrect.center=cpos
+    return surface.blit(render, textrect)
 def sndget(fil):
     return pygame.mixer.Sound(np(loc+"Sounds/"+fil+".wav"))
 

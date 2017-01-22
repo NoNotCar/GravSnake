@@ -25,6 +25,10 @@ class Terrain(object):
         return self.ut[self.corners]
 class Dirt(Terrain):
     ut=Img.UltraTiles("Tiles/WMapDirt")
+    name="Dirt"
+class Snow(Terrain):
+    ut=Img.UltraTiles("Tiles/WMapSnow")
+    name="Snow"
 class Path(object):
     ut = Img.UltraTiles("WMapPath")
     eimg=ut[(0,0,0,0)]
@@ -72,3 +76,9 @@ class Level(Spawn):
     @property
     def limg(self):
         return self.limgs[self.progress+self.revealed]
+    def draw(self,x,y,ss,b):
+        if self.revealed:
+            ss.blit(self.img[b.iscale],(x*b.rscale,y*b.rscale))
+        ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
+        if not b.game:
+            Img.bcentrepos(Img.sfont,self.lname,ss,(x*b.rscale+b.rscale//2,y*b.rscale))

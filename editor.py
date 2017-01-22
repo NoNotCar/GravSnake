@@ -30,7 +30,7 @@ placers=[B.Rotator(),B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.N
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
          B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),
          B.NTerrainPlacer(Interactives.XSwitch,4),B.NTerrainPlacer(Interactives.XSwitch,4,0),B.NTerrainPlacer(Interactives.XButton,4),
-         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer(),B.TerrainPlacer(Interactives.Penguin)]
+         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer(),B.TerrainPlacer(Interactives.Penguin),B.TerrainPlacer(Interactives.SpikyThud)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)

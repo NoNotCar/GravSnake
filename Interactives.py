@@ -4,6 +4,7 @@ import Direction as D
 switch=Img.sndget("switch")
 error=Img.sndget("nomove")
 stick=Img.sndget("stick")
+thud=Img.sndget("thud")
 cols=[(255,0,0),(0,0,255),(255,255,0),(0,255,0)]
 def xswitch(b,col):
     xbs = []
@@ -149,4 +150,40 @@ class Penguin(Tile):
     @property
     def img(self):
         return self.imgs[(self.d==-1)+self.selected*2]
+class SpikyThud(Tile):
+    interactive = 2
+    goal = True
+    valuable = True
+    portals = True
+    imgs=Img.imgstripx("SpikyThud")
+    name="SpikyThud"
+    spiky=True
+    grav=0
+    def __init__(self,x,y):
+        Tile.__init__(self,x,y)
+        self.gshape=GravShape(self)
+    def move(self,dx,dy,b):
+        for t in b.get_ts(self.x+dx,self.y+dy):
+            if t.solid and (dx,dy) in t.pushdirs:
+                if t.push(b):
+                    b.move(self,dx,dy)
+                    return True
+                else:
+                    error.play()
+                    return False
+        if b.push(self.gshape,dx,dy,fail_deadly=True):
+            b.goal_test()
+            while b.push(self.gshape,dx,dy,fail_deadly=True):
+                b.goal_test()
+            thud.play()
+            return True
+        else:
+            error.play()
+            return False
+    @property
+    def state(self):
+        return "SpTh"+",".join((str(self.x),str(self.y)))
+    @property
+    def img(self):
+        return self.imgs[self.selected]
 

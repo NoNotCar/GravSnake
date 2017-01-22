@@ -17,7 +17,7 @@ class RunLevel(Exception):
 class WorldMap(object):
     iscale = 3
     rscale = 64
-    back=(0,148,255)
+    back=(92,152,255)
     game=False
     px,py=0,0
     state=UNLOCK
@@ -152,7 +152,7 @@ class WorldMap(object):
             if p.__class__==WMObjects.Spawn:
                 self.px, self.py =x,y
                 self.unodes.append((x,y))
-            elif p.name=="Level" and p.lname in completed:
+            elif p.name=="Level" and completed and p.lname in completed:
                 self.unodes.append((x, y))
                 p.progress=True
         self.re_img()
