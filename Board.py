@@ -220,6 +220,8 @@ class Board(object):
         self.t[s.x][s.y].append(s)
     def dest(self,s):
         self.t[s.x][s.y].remove(s)
+    def exists(self,s):
+        return s in self.t[s.x][s.y]
     def move(self,o,dx,dy):
         self.dest(o)
         o.x+=dx

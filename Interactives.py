@@ -173,9 +173,10 @@ class SpikyThud(Tile):
                     return False
         if b.push(self.gshape,dx,dy,fail_deadly=True):
             b.goal_test()
-            while b.push(self.gshape,dx,dy,fail_deadly=True):
+            while b.exists(self) and b.push(self.gshape,dx,dy,fail_deadly=True):
                 b.goal_test()
-            thud.play()
+            if b.exists(self):
+                thud.play()
             return True
         else:
             error.play()
