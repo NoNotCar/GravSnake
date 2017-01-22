@@ -2,6 +2,7 @@ import WMObjects
 import Img
 import Direction as D
 import pygame
+import pickle
 mm=Img.imgx("MapMan")
 MOVEMENT=0
 UNLOCK=1
@@ -30,6 +31,7 @@ class WorldMap(object):
         self.re_img()
         self.scale = scale
         self.unodes=[]
+        self.completed =set()
     def render(self, screen):
         screen.fill(self.back)
         for x,y in self.iterlocs():
@@ -54,6 +56,10 @@ class WorldMap(object):
                     lcomplete.play()
                     p=self.get_p(self.px,self.py)
                     p.progress=1
+                    self.completed.add(p.lname)
+                    if self.savename is not None:
+                        with open(Img.np(Img.loc+"Save/"+self.savename+".sav"),"w") as s:
+                            pickle.dump(self.completed,s)
                     self.unodes=[(self.px,self.py)]
                     self.state=UNLOCK
                     self.unlock(True)
@@ -139,15 +145,25 @@ class WorldMap(object):
         for p,x,y in self.iterpaths(True):
             p.re_img(self,x,y)
 
-    def prepare(self):
+    def prepare(self,savename,completed=None):
         for p,x,y in self.iterpaths(True):
             p.revealed=False
         for p, x, y in self.iterpaths(True):
             if p.__class__==WMObjects.Spawn:
                 self.px, self.py =x,y
                 self.unodes.append((x,y))
+            elif p.name=="Level" and p.lname in completed:
+                self.unodes.append((x, y))
+                p.progress=True
         self.re_img()
         self.game=True
+        self.savename=savename
+        if completed is not None:
+            self.completed=completed
+            self.unlock_turbo()
+            self.state=MOVEMENT
+        else:
+            self.completed=set()
     def unlock(self,force=False):
         try:
             nx,ny=self.unodes[self.up]
@@ -162,6 +178,14 @@ class WorldMap(object):
             if p.progress:
                 self.unodes.extend(p for p in D.iter_offsets(nx,ny) if p not in self.unodes)
         self.up+=1
+        self.re_img()
+    def unlock_turbo(self):
+        for nx,ny in self.unodes:
+            p=self.get_p(nx,ny)
+            if p and not p.revealed:
+                p.revealed=True
+                if p.progress:
+                    self.unodes.extend(p for p in D.iter_offsets(nx,ny) if p not in self.unodes)
         self.re_img()
     def cancel(self):
         self.state=MOVEMENT

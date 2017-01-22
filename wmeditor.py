@@ -67,7 +67,7 @@ while True:
                     pass
                     if m.task=="Play":
                         pb=deepcopy(b)
-                        pb.prepare()
+                        pb.prepare(None)
                         run_wm(pb,screen,ss,r)
                     elif m.task=="New":
                         b=WorldMap.WorldMap((b.sx,b.sy),b.scale)

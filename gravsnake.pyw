@@ -27,7 +27,15 @@ while True:
         scale=64
         with open(Img.np(Img.loc + "Levels/%s%s" % (lname,(".gwm" if wm else ".lvl")))) as s:
             b = pickle.load(s)
-            b.prepare()
+            if wm:
+                try:
+                    with open(Img.np(Img.loc + "Save/%s.sav" % lname)) as s:
+                        completed=pickle.load(s)
+                except IOError:
+                    completed=set()
+                b.prepare(lname,completed)
+            else:
+                b.prepare()
             b.scale=scale
         size = b.sx, b.sy
         r = pygame.Rect(0, 0, size[0] * scale, size[1] * scale)
