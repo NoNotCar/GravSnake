@@ -117,11 +117,12 @@ class SnakePlacer(Placer):
             if n:
                 ls=tpos[n-1]
                 bdire=D.dirs.index((ls[0]-tx,ls[1]-ty))
-            s=self.head.segclass(tx,ty,2**bdire if n else 0,2**fdire,snake)
+            s=self.head.segclass(tx,ty,bdire if n else None,fdire,snake)
             b.spawn(s)
         tx,ty=tpos[-1]
         sh=self.head(tx,ty,snake)
         b.spawn(sh)
+        b.re_img()
 # class SnakeFlipper(Placer):
 #     img=bimg4("FlipSnake")
 #     continous = False
