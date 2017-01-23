@@ -30,7 +30,7 @@ class Tile(object):
         pass
     def on_dest(self,b):
         pass
-    def eat(self,b):
+    def eat(self, b, snake):
         return True
     def is_face(self,dx,dy):
         if self.gshape:
@@ -81,6 +81,9 @@ class UltraTile(Tile):
 class Dirt(UltraTile):
     ut=UltraTiles("Tiles/Dirt")
     name="Dirt"
+class PinkDirt(UltraTile):
+    ut=UltraTiles("Tiles/PinkDirt")
+    name="PinkDirt"
 class Snow(UltraTile):
     ut=UltraTiles("Tiles/Snow")
     name="Snow"
@@ -165,7 +168,7 @@ class Fruit(Tile):
     def __init__(self,x,y):
         Tile.__init__(self,x,y)
         self.iid=IM_FRUIT.register()
-    def eat(self,b):
+    def eat(self, b, snake):
         b.fruit-=1
         return True
     @property
@@ -174,6 +177,17 @@ class Fruit(Tile):
     @property
     def img(self):
         return IM_FRUIT[self.iid]
+class Fluffy(Tile):
+    #EAT FLUFFY GET FLIPPY
+    name = "Fluffy"
+    img = imgx("Fluffy")
+    edible = True
+    def eat(self, b, snake):
+        snake.snake.grav=-snake.snake.grav
+        return False
+    @property
+    def state(self):
+        return "Fluffy"
 class GravShape(object):
     def __init__(self,*tiles):
         self.tiles=list(tiles)
@@ -219,7 +233,7 @@ class SpikeBlock(Block):
 class Cheese(Block):
     ut=UltraTiles("Tiles/Cheese")
     edible = True
-    def eat(self,b):
+    def eat(self, b, snake):
         return False
 class Diamond(Tile):
     img=imgx("Diamond")

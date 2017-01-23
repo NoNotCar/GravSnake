@@ -26,6 +26,9 @@ class Terrain(object):
 class Dirt(Terrain):
     ut=Img.UltraTiles("Tiles/WMapDirt")
     name="Dirt"
+class PinkDirt(Terrain):
+    ut=Img.UltraTiles("Tiles/WMapPinkDirt")
+    name="PinkDirt"
 class Snow(Terrain):
     ut=Img.UltraTiles("Tiles/WMapSnow")
     name="Snow"

@@ -25,7 +25,7 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
-placers=[B.WMTerrainPlacer(WMObjects.Dirt),B.WMTerrainPlacer(WMObjects.Snow),
+placers=[B.WMTerrainPlacer(WMObjects.Dirt),B.WMTerrainPlacer(WMObjects.Snow),B.WMTerrainPlacer(WMObjects.PinkDirt),
          B.WMPathPlacer(WMObjects.Path),B.WMPathPlacer(WMObjects.Spawn),B.WMLevelPlacer(WMObjects.Level)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx

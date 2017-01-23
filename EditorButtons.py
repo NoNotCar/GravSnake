@@ -46,11 +46,12 @@ class ExternalButton(Button):
     def on_click(self,mb,board):
         raise ExternalMethod(self.task)
 class BiomeButton(Button):
-    b=Biomes.biomes.index(Biomes.Islands)
+    b=0
     def on_click(self,mb,board):
         self.b+=1
         self.b%=len(Biomes.biomes)
         board.biome=Biomes.biomes[self.b]
+        btp.reload(board)
     def reload(self,b):
         self.b=Biomes.biomes.index(b.biome)
     @property
@@ -72,6 +73,8 @@ class Placer(object):
                 t.on_dest(b)
             b.re_img()
     def scroll(self,d):
+        pass
+    def reload(self,b):
         pass
 class TerrainPlacer(Placer):
     def __init__(self,tclass):
@@ -101,6 +104,21 @@ class NTerrainPlacer(Placer):
     @property
     def img(self):
         return self.imgs[self.n]
+class BiomeTerrainPlacer(Placer):
+    def reload(self,b):
+        terr=b.biome.terrain
+        try:
+            self.placer=NTerrainPlacer(terr[0],terr[1])
+        except TypeError:
+            self.placer=TerrainPlacer(terr)
+    def place(self,b,tpos):
+        self.placer.place(b,tpos)
+    def scroll(self,d):
+        self.placer.scroll(d)
+    @property
+    def img(self):
+        return self.placer.img
+btp=BiomeTerrainPlacer()
 class SnakePlacer(Placer):
     multi = True
     def __init__(self,sc):

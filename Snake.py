@@ -77,7 +77,7 @@ class SnakeHead(Tile):
         if b.in_world(tx,ty):
             for t in b.get_ts(tx,ty):
                 if t.edible:
-                    eating=t.eat(b)
+                    eating= t.eat(b, self)
                     b.dest(t)
                     t.on_dest(b)
                     b.re_img()

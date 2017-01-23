@@ -25,12 +25,13 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.BiomeButton(),B.ExternalButton("Play")]
-placers=[B.Rotator(),B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.SeaBlock),B.NTerrainPlacer(Tiles.Hex,4),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
+placers=[B.Rotator(),B.btp,B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
          B.SnakePlacer(Snake),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
          B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),
          B.NTerrainPlacer(Interactives.XSwitch,4),B.NTerrainPlacer(Interactives.XSwitch,4,0),B.NTerrainPlacer(Interactives.XButton,4),
-         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer(),B.TerrainPlacer(Interactives.Penguin),B.TerrainPlacer(Interactives.SpikyThud)]
+         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer(),B.TerrainPlacer(Interactives.Penguin),B.TerrainPlacer(Interactives.SpikyThud),
+         B.TerrainPlacer(Tiles.Fluffy)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -48,6 +49,12 @@ error=Img.sndget("nomove")
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
             sys.exit()
+def reboard(board):
+    for p in placers:
+        p.reload(board)
+    for bu in buttons:
+        bu.reload(board)
+reboard(b)
 while True:
     flip=False
     es=pygame.event.get()
@@ -83,6 +90,7 @@ while True:
                         b=Board.Board((b.sx,b.sy),b.scale)
                         for im in Img.imss:
                             im.reload()
+                        reboard(b)
                     flip=True
             elif pr.collidepoint(mx,my):
                 nsel=(my-pr.top)//64+mx//64*16
@@ -108,8 +116,7 @@ while True:
                         pass
                     saving=False
                     flip=True
-                    for bu in buttons:
-                        bu.reload(b)
+                    reboard(b)
                 elif saving:
                     saving=False
                 else:
