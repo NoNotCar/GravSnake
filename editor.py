@@ -25,7 +25,7 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.BiomeButton(),B.ExternalButton("Play")]
-placers=[B.Rotator(),B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.NTerrainPlacer(Tiles.Hex,4),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
+placers=[B.Rotator(),B.TerrainPlacer(Tiles.Dirt),B.TerrainPlacer(Tiles.Snow),B.TerrainPlacer(Tiles.SeaBlock),B.NTerrainPlacer(Tiles.Hex,4),B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
          B.SnakePlacer(Snake),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
          B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
          B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),

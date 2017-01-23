@@ -20,7 +20,7 @@ kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
 portal=Img.sndget("portal")
 exp=Img.sndget("exp")
 speed=5
-musics=["Overworld","Mars","Snow","Glowsphere"]
+musics=["Overworld","Mars","Snow","Glowsphere","Underwater"]
 class Board(object):
     tcool=0
     game=False
@@ -51,7 +51,7 @@ class Board(object):
                 self.tcool-=1
             else:
                 if self.phase==GRAVITY:
-                    if self.grav():
+                    if self.grav() and not self.biome.water:
                         self.tcool=speed*(1 if self.phase==GRAVITY else 4)
                         self.goal_test()
                     else:
@@ -66,7 +66,7 @@ class Board(object):
                     for t in self.itertiles():
                         if t.name=="Exp":
                             self.dest(t)
-                    self.phase=GRAVITY
+                    self.phase=GRAVITY if self.biome.water else INPUT
         else:
             for e in events:
                 if e.type==pygame.MOUSEBUTTONDOWN:

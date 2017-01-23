@@ -45,7 +45,8 @@ class Path(object):
         if not self.bridge:
             self.bridgeends = [0, 0, 0, 0]
             for n, (tx, ty) in enumerate(D.iter_offsets(x, y)):
-                if wm.get_p(tx,ty):
+                p=wm.get_p(tx,ty)
+                if p and p.revealed:
                     self.bridgeends[n]=not wm.get_t(tx,ty)
         corners = []
         for dset in D.icorners:
@@ -91,6 +92,7 @@ class Level(Spawn):
         return self.limgs[self.progress+self.revealed]
     def draw(self,x,y,ss,b):
         Path.draw(self, x, y, ss, b)
-        ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
+        if self.revealed:
+            ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
         if not b.game:
             Img.bcentrepos(Img.sfont,self.lname,ss,(x*b.rscale+b.rscale//2,y*b.rscale))

@@ -5,10 +5,10 @@ import Direction as D
 class ExternalMethod(Exception):
     def __init__(self,task):
         self.task=task
-musbase=Img.imgx("Music/Icons/Base")
-musicons=[Img.imgx("Music/Icons/"+m) for m in Board.musics]
-for m in musicons:
-    m.blit(musbase,(0,0))
+# musbase=Img.imgx("Music/Icons/Base")
+# musicons=[Img.imgx("Music/Icons/"+m) for m in Board.musics]
+# for m in musicons:
+#     m.blit(musbase,(0,0))
 def bimg4(fil):
     return Img.imgx("Buttons/" + fil)
 class Button(object):

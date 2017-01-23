@@ -98,14 +98,22 @@ class SnakeHead(Tile):
         else:
             return False
         if not eating:
-            b.dest(snake.pop(0))
-            snake[0].bdir = None
-            snake[0].re_img(b)
+            for s in snake:
+                if s.name!="SnakeHead" and s.bdir is None:
+                    snake.remove(s)
+                    b.dest(s)
+                    break
+            else:
+                raise RuntimeError, "NO TAIL DETECTED"
+            spos=set((t.x,t.y) for t in snake)
+            for s in snake:
+                if s.name!="SnakeHead" and D.add_vs((s.x,s.y),D.get_dir(s.bdir)) not in spos:
+                    s.bdir=None
+                    s.re_img(b)
+                    break
         nd=D.dirs.index((dx, dy))
-        snake.remove(self)
-        s=self.segclass(self.x,self.y,(self.d+2)%4 if len(snake) else None,nd,self.snake)
+        s=self.segclass(self.x,self.y,(self.d+2)%4 if len(snake)>1 else None,nd,self.snake)
         s.re_img(b)
-        snake.append(self)
         b.spawn(s)
         b.move(self,dx,dy)
         self.d=nd

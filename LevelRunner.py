@@ -57,6 +57,7 @@ def run_wm(wm, screen, ss, r):
     back = wm.back
     screen.fill(tuple(c * 0.5 for c in back))
     pygame.display.flip()
+    Img.musplay("Map")
     while True:
         es = pygame.event.get()
         for e in es:
@@ -66,6 +67,8 @@ def run_wm(wm, screen, ss, r):
         try:
             wm.update(es, (mx - r.left) // wm.rscale, (my - r.top) // wm.rscale)
         except WorldMap.RunLevel as e:
+            pygame.mixer.music.stop()
+            pygame.time.wait(250)
             while True:
                 scale = 64
                 b=deepcopy(e.b)
@@ -91,6 +94,7 @@ def run_wm(wm, screen, ss, r):
                         wm.cancel()
                     for im in Img.imss:
                         im.reload()
+                    Img.musplay("Map")
                     break
             screen.fill(tuple(c * 0.5 for c in back))
             pygame.display.flip()

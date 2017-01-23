@@ -84,6 +84,9 @@ class Dirt(UltraTile):
 class Snow(UltraTile):
     ut=UltraTiles("Tiles/Snow")
     name="Snow"
+class SeaBlock(UltraTile):
+    ut=UltraTiles("Tiles/SeaBlock")
+    name="SeaBlock"
 class Hex(UltraTile):
     uts=imgs=[Img.UltraTiles("Tiles/Hex",col) for col in cols]
     for n,u in enumerate(uts):
@@ -204,6 +207,9 @@ class Block(UltraTile):
     @property
     def ut(self):
         return IM_BLOCK[self.gshape.iid]
+    @property
+    def state(self):
+        return "B"+str((self.x,self.y))
 class CloudBlock(Block):
     ut=UltraTiles("Tiles/CloudBlock")
     grav=0
