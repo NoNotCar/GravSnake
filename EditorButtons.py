@@ -104,6 +104,17 @@ class NTerrainPlacer(Placer):
     @property
     def img(self):
         return self.imgs[self.n]
+class MTerrainPlacer(NTerrainPlacer):
+    def __init__(self,*tclasses):
+        self.tcs=tclasses
+        self.imgs=[tc(0,0).img for tc in tclasses]
+        self.ns=len(tclasses)
+    def place(self,b,tpos):
+        tx,ty=tpos
+        ts=list(b.get_ts(*tpos))
+        if len(ts)!=1 or not isinstance(ts[0],self.tcs[self.n]):
+            b.t[tpos[0]][tpos[1]]=[self.tcs[self.n](tx,ty)]
+            b.re_img()
 class BiomeTerrainPlacer(Placer):
     def reload(self,b):
         terr=b.biome.terrain
@@ -198,6 +209,15 @@ class Rotator(Placer):
             if t.name=="XSwitch":
                 t.r+=1
                 t.r%=4
+class Zipper(Placer):
+    img=bimg4("Zip")
+    continous = False
+    selicon = True
+    def place(self,b,tpos):
+        for t in b.get_ts(*tpos):
+            if "SnakeHead"==t.name:
+                t.zipped=not t.zipped
+                break
 class WMTerrainPlacer(Placer):
     def __init__(self,tclass):
         self.tc=tclass

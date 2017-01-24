@@ -60,8 +60,9 @@ class SnakeHead(Tile):
     valuable = True
     goal=True
     portals = True
+    zipped=False
     eimg = imgstripx("SnakeHead")[3]
-    faces={-1:imgstripx("AntiSnakeFace"),1:imgstripx("SnakeFace")}
+    faces={-1:imgstripx("AntiSnakeFace")+imgstripx("ZippedAntiSnakeFace"),1:imgstripx("SnakeFace")+imgstripx("ZippedSnakeFace")}
     interactive = 2
     def __init__(self,x,y,snake):
         Tile.__init__(self,x,y)
@@ -73,10 +74,16 @@ class SnakeHead(Tile):
     def move(self,dx,dy,b):
         tx,ty=self.x+dx,self.y+dy
         snake=self.snake.tiles
+        for s in snake:
+            if s.name != "SnakeHead" and s.bdir is None:
+                tail=s
+                break
+        else:
+            raise RuntimeError, "NO TAIL DETECTED"
         eating=False
         if b.in_world(tx,ty):
             for t in b.get_ts(tx,ty):
-                if t.edible:
+                if t.edible and not self.zipped:
                     eating= t.eat(b, self)
                     b.dest(t)
                     t.on_dest(b)
@@ -84,7 +91,7 @@ class SnakeHead(Tile):
                     grow.play()
                     break
                 elif t.gshape and t not in snake and not (t.spiky and self.spikable):
-                    if b.push(t.gshape, dx, dy, self.snake):
+                    if b.push(t.gshape, dx, dy, self.snake,tail):
                         break
                     else:
                         nomove.play()
@@ -98,13 +105,8 @@ class SnakeHead(Tile):
         else:
             return False
         if not eating:
-            for s in snake:
-                if s.name!="SnakeHead" and s.bdir is None:
-                    snake.remove(s)
-                    b.dest(s)
-                    break
-            else:
-                raise RuntimeError, "NO TAIL DETECTED"
+            snake.remove(tail)
+            b.dest(tail)
             spos=set((t.x,t.y) for t in snake)
             for s in snake:
                 if s.name!="SnakeHead" and D.add_vs((s.x,s.y),D.get_dir(s.bdir)) not in spos:
@@ -123,7 +125,7 @@ class SnakeHead(Tile):
     def draw(self,b,screen):
         tpos=self.x*b.scale,self.y*b.scale
         screen.blit(self.img[b.iscale],tpos)
-        screen.blit(self.faces[self.grav][self.selected][b.iscale],tpos)
+        screen.blit(self.faces[self.grav][self.selected+self.zipped*2][b.iscale],tpos)
     def on_dest(self,b):
         if b.game:
             raise RuntimeError,"SNEK DELETED IN GAME"

@@ -166,7 +166,7 @@ class Board(object):
         if self.phase==EXPLODING:
             exp.play()
         return grav
-    def push(self, pshape, dx, dy, snake=None,fail_deadly=False):
+    def push(self, pshape, dx, dy,snake=None, snake_tail=None,fail_deadly=False):
         cgroup = pshape.tiles[:]
         spiked=set()
         spiking=set()
@@ -175,7 +175,7 @@ class Board(object):
             if not self.in_world(cx+dx, cy+dy):
                 break
             for ot in self.get_ts(cx+dx, cy+dy):
-                if ot in cgroup or snake and ot is snake.tiles[0]:
+                if ot in cgroup or ot is snake_tail:
                     continue
                 elif snake and ot in snake.tiles:
                     break

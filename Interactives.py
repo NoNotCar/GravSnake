@@ -150,41 +150,44 @@ class Penguin(Tile):
     @property
     def img(self):
         return self.imgs[(self.d==-1)+self.selected*2]
-class SpikyThud(Tile):
+class Thud(Tile):
     interactive = 2
     goal = True
     valuable = True
     portals = True
-    imgs=Img.imgstripx("SpikyThud")
-    name="SpikyThud"
-    spiky=True
+    imgs=Img.imgstripx("Thud")
+    name="Thud"
     grav=0
     def __init__(self,x,y):
         Tile.__init__(self,x,y)
         self.gshape=GravShape(self)
     def move(self,dx,dy,b):
+        moved=False
+        while b.exists(self) and b.push(self.gshape,dx,dy,fail_deadly=True):
+            b.goal_test()
+            moved=True
         for t in b.get_ts(self.x+dx,self.y+dy):
             if t.solid and (dx,dy) in t.pushdirs:
                 if t.push(b):
                     b.move(self,dx,dy)
-                    return True
+                    moved=True
                 else:
                     error.play()
                     return False
-        if b.push(self.gshape,dx,dy,fail_deadly=True):
-            b.goal_test()
-            while b.exists(self) and b.push(self.gshape,dx,dy,fail_deadly=True):
-                b.goal_test()
-            if b.exists(self):
-                thud.play()
+        if moved:
+            thud.play()
             return True
         else:
             error.play()
             return False
     @property
     def state(self):
-        return "SpTh"+",".join((str(self.x),str(self.y)))
+        return self.name+",".join((str(self.x),str(self.y)))
     @property
     def img(self):
         return self.imgs[self.selected]
+class SpikyThud(Thud):
+    imgs = Img.imgstripx("SpikyThud")
+    name = "SpikyThud"
+    spiky = True
 
