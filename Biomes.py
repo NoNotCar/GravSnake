@@ -72,5 +72,15 @@ class Underwater(Biome):
         self.rx%=64
         self.yp+=0.03
         self.yp%=tau
-biomes=Islands,Snow,Underwater,Alien,PinkIslands
+class Special(Biome):
+    backcolour = (6,)*3
+    music="Critical"
+    terrain = Tiles.Hex,4
+    def __init__(self,b):
+        self.starfx=FX.DFXLayer(FX.RotoStar,0.2,b)
+        self.beamfx=FX.DFXLayer(FX.BeamFX,0.5,b,i_y=True)
+    def render_back(self,ss,b):
+        self.starfx.render(ss,b)
+        self.beamfx.render(ss,b)
+biomes=Islands,Snow,Underwater,Alien,PinkIslands,Special
 bimgs=[Img.imgx("B_"+b.__name__) for b in biomes]
