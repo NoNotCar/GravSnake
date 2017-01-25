@@ -197,6 +197,7 @@ class BGravShape(GravShape):
         self.tiles=[]
 class Block(UltraTile):
     name="Block"
+    extension=None
     def __init__(self,x,y,gshape):
         UltraTile.__init__(self,x,y)
         self.gshape=gshape
@@ -218,12 +219,23 @@ class Block(UltraTile):
         self.gshape.tiles.remove(self)
         for t in self.gshape.tiles:
             t.re_img(b,False)
+    def move(self,dx,dy,b):
+        return self.extension.move(dx,dy,b)
     @property
     def ut(self):
         return IM_BLOCK[self.gshape.iid]
     @property
     def state(self):
         return "B"+str((self.x,self.y))
+    @property
+    def interactive(self):
+        if self.extension:
+            return self.extension.interactive
+        return 0
+    def draw(self,b,screen):
+        UltraTile.draw(self,b,screen)
+        if self.extension:
+            screen.blit(self.extension.img[b.iscale], (self.x * b.scale, self.y * b.scale))
 class CloudBlock(Block):
     ut=UltraTiles("Tiles/CloudBlock")
     grav=0

@@ -190,4 +190,21 @@ class SpikyThud(Thud):
     imgs = Img.imgstripx("SpikyThud")
     name = "SpikyThud"
     spiky = True
+class BlockExtension(Tile):
+    eimg=None
+    def __init__(self,block):
+        self.block=block
+        self.shape=block.gshape
+class Mover(BlockExtension):
+    interactive = 2
+    imgs=Img.imgstripx("Blocks/Mover")
+    eimg=imgs[1]
+    def move(self,dx,dy,b):
+        if b.push(self.shape,dx,dy):
+            return True
+        else:
+            error.play()
+    @property
+    def img(self):
+        return self.imgs[self.block.selected]
 

@@ -218,6 +218,17 @@ class Zipper(Placer):
             if "SnakeHead"==t.name:
                 t.zipped=not t.zipped
                 break
+class BEPlacer(Placer):
+    continous = False
+    selicon = True
+    def __init__(self,beclass):
+        self.beclass=beclass
+        self.img=self.beclass.eimg
+    def place(self,b,tpos):
+        for t in b.get_ts(*tpos):
+            if isinstance(t,Tiles.Block):
+                t.extension=self.beclass(t)
+                break
 class WMTerrainPlacer(Placer):
     def __init__(self,tclass):
         self.tc=tclass
@@ -261,3 +272,4 @@ class WMLevelPlacer(WMPathPlacer):
         if p:
             wm.paths[tpos[0]][tpos[1]]=None
             wm.re_img()
+
