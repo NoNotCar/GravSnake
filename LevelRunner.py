@@ -45,7 +45,6 @@ def run(b,screen,ss,r):
             pygame.display.flip()
             pygame.time.wait(1000 if fail else 2000)
             if e.code == "FAIL":
-                del undos[-2:-1]
                 b = deepcopy(undos[-1])
                 screen.fill(tuple(c * 0.5 for c in back))
                 pygame.display.flip()
