@@ -70,6 +70,14 @@ class SBlockTile(Tile):
     def __init__(self,x,y):
         Tile.__init__(self,x,y)
         self.gshape=GravShape(self)
+class RotatableTile(Tile):
+    imgs=()
+    def __init__(self,x,y,r=0):
+        Tile.__init__(self,x,y)
+        self.r=r
+    @property
+    def img(self):
+        return self.imgs[self.r]
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)
@@ -265,3 +273,18 @@ class Diamond(Tile):
     def __init__(self,x,y):
         Tile.__init__(self,x,y)
         self.gshape=GravShape(self)
+class OnceGoalBlock(RotatableTile):
+    imgs=Img.imgrot(Img.imgx("Tiles/1TGoal"))
+    ct=Img.imgstripx("CrossTick")
+    goal = True
+    sat=False
+    def satisfied(self,b):
+        if self.sat:
+            return True
+        for t in b.get_ts(*D.add_vs((self.x,self.y),D.get_dir(self.r))):
+            if t.solid:
+                self.sat=True
+                return True
+    def draw(self,b,screen):
+        RotatableTile.draw(self,b,screen)
+        screen.blit(self.ct[self.sat][b.iscale], (self.x * b.scale, self.y * b.scale))

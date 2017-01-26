@@ -18,6 +18,7 @@ class ChessPiece(SBlockTile):
     goal = 1
     portals = 1
     updates = 1
+    spikable = True
     def __init__(self,x,y):
         SBlockTile.__init__(self,x,y)
         self.selectors=[]

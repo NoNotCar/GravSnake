@@ -266,7 +266,7 @@ class Board(object):
                     if g in self.updatables:
                         self.updatables.remove(g)
                     portal.play()
-        if all(g.satisfied(self) for g in self.goals):
+        if all([g.satisfied(self) for g in self.goals]):
             raise GameEnd(False,"WIN")
     def prepare(self):
         self.goals=[]
@@ -275,7 +275,6 @@ class Board(object):
         for t in self.itertiles():
             if t.interactive==2 and not self.controlled:
                 self.controlled=t
-                t.on_select(self)
             elif t.name=="Fruit":
                 self.fruit+=1
             if t.goal:
