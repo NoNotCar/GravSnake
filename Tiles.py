@@ -56,10 +56,20 @@ class Tile(object):
         return self.update(b)
     def post_grav(self,b):
         return self.update(b)
+    def on_select(self,b):
+        pass
+    def on_deselect(self,b):
+        pass
+    def on_portal(self,b):
+        pass
     def same(self, other):
         if isinstance(other,Tile):
             return self.name==other.name
         return False
+class SBlockTile(Tile):
+    def __init__(self,x,y):
+        Tile.__init__(self,x,y)
+        self.gshape=GravShape(self)
 class UltraTile(Tile):
     ut=None
     corners=(0,0,0,0)

@@ -75,25 +75,26 @@ class Board(object):
                             if t.interactive==2:
                                 if self.controlled:
                                     self.controlled.selected=False
+                                    self.controlled.on_deselect(self)
                                 self.controlled=t
                                 self.controlled.selected=True
+                                t.on_select(self)
                             elif t.interact(self,e.button):
-                                self.tcool = speed
-                                self.phase = GRAVITY
-                                [t.pre_grav(self) for t in self.updatables]
-                                self.goal_test()
+                                self.on_move()
                                 break
                 if self.controlled and e.type==pygame.KEYDOWN:
                     if e.key in kconv.keys():
                         kx,ky=kconv[e.key]
                         if self.controlled.move(kx,ky,self):
-                            self.tcool=speed
-                            self.phase=GRAVITY
-                            [t.pre_grav(self) for t in self.updatables]
-                            self.goal_test()
+                            self.on_move()
                             break
                     elif e.key==pygame.K_r:
                         raise GameEnd(True,"RESET")
+    def on_move(self):
+        self.tcool = speed
+        self.phase = GRAVITY
+        [t.pre_grav(self) for t in self.updatables]
+        self.goal_test()
     def iterlocs(self):
         for x in range(self.sx):
             for y in range(self.sy):
@@ -261,6 +262,9 @@ class Board(object):
                         self.dest(s)
                         if s is self.controlled:
                             self.controlled=None
+                    g.on_portal(self)
+                    if g in self.updatables:
+                        self.updatables.remove(g)
                     portal.play()
         if all(g.satisfied(self) for g in self.goals):
             raise GameEnd(False,"WIN")
@@ -271,6 +275,7 @@ class Board(object):
         for t in self.itertiles():
             if t.interactive==2 and not self.controlled:
                 self.controlled=t
+                t.on_select(self)
             elif t.name=="Fruit":
                 self.fruit+=1
             if t.goal:
