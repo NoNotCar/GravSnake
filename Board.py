@@ -111,8 +111,8 @@ class Board(object):
     def grav(self):
         grav=False
         fixed=set()
-        shapes=[t.gshape for t in self.itertiles() if t.gshape and t.grav]
-        for s in sorted(shapes,key=lambda s:s.tiles[0].grav,reverse=True):
+        # shapes=[t.gshape for t in self.itertiles() if t.gshape and t.grav]
+        for s in sorted(self.gshapes,key=lambda s:s.tiles[0].grav,reverse=True):
             if s.tiles[0] in fixed:
                 continue
             cgroup=s.tiles[:]
@@ -271,6 +271,7 @@ class Board(object):
     def prepare(self):
         self.goals=[]
         self.updatables=[]
+        self.gshapes=[]
         self.game=True
         for t in self.itertiles():
             if t.interactive==2 and not self.controlled:
@@ -281,6 +282,8 @@ class Board(object):
                 self.goals.append(t)
             if t.updates:
                 self.updatables.append(t)
+            if t.gshape and t.grav:
+                self.gshapes.append(t.gshape)
         if self.controlled:
             self.controlled.selected=True
         self.re_img()
