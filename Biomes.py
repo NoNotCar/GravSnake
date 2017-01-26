@@ -66,7 +66,7 @@ class Underwater(Biome):
     water=True
     terrain = Tiles.SeaBlock
     def __init__(self,b):
-        self.swfx=FX.DFXLayer(FX.Seaweed,0.5,b,i_y=True)
+        self.swfx=FX.DFXLayer(FX.Seaweed,1,b,i_y=True)
     def render_back(self,ss,b):
         for x in range(b.sx+1):
             ss.blit(self.fxwater[b.iscale],(x*b.rscale+self.rx*b.ascale//4-b.rscale,-0.5*b.rscale+math.sin(self.yp)*b.rscale/4))

@@ -112,10 +112,10 @@ class Seaweed(RFX):
         self.base=randint(0,b.sx*64)
         self.segs=randint(5,10)
         self.segl=randint(32,48)
-        self.wav=uniform(0.1,0.2)
+        self.wav=uniform(0.1,0.3)
         self.wavw=randint(4,8)
         self.prog=uniform(0,tau)
-        self.speed=uniform(0.005,0.01)
+        self.speed=uniform(0.01,0.02)
         self.w=randint(4,8)
         self.h=b.sy*64
         self.csegs=[tuple(c+randint(-10,10) for c in self.col) for _ in range(self.segs)]
