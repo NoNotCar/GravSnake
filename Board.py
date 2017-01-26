@@ -265,6 +265,8 @@ class Board(object):
                     g.on_portal(self)
                     if g in self.updatables:
                         self.updatables.remove(g)
+                    if g.gshape in self.gshapes:
+                        self.gshapes.remove(g.gshape)
                     portal.play()
         if all([g.satisfied(self) for g in self.goals]):
             raise GameEnd(False,"WIN")
