@@ -65,6 +65,8 @@ class Underwater(Biome):
     music = "Underwater"
     water=True
     terrain = Tiles.SeaBlock
+    def __init__(self,b):
+        self.swfx=FX.DFXLayer(FX.Seaweed,0.5,b,i_y=True)
     def render_back(self,ss,b):
         for x in range(b.sx+1):
             ss.blit(self.fxwater[b.iscale],(x*b.rscale+self.rx*b.ascale//4-b.rscale,-0.5*b.rscale+math.sin(self.yp)*b.rscale/4))
@@ -72,6 +74,7 @@ class Underwater(Biome):
         self.rx%=64
         self.yp+=0.03
         self.yp%=tau
+        self.swfx.render(ss,b)
 class Special(Biome):
     backcolour = (6,)*3
     music="Critical"

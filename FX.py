@@ -1,6 +1,6 @@
 import Img
 from random import randint,choice,random,uniform
-from Graphics import tau,star
+from Graphics import tau,star,seaweed
 from math import pi,sin,cos,tan,asin,acos,atan
 import pygame
 class FXLayer(object):
@@ -107,7 +107,26 @@ class BeamFX(FX):
         h=b.sy*b.rscale
         pygame.draw.polygon(ss,self.col,((self.sx,h),(self.sx+h/tan(ang-self.ba),0),(self.sx+h/tan(ang+self.ba),0)))
 class Seaweed(RFX):
-    pass
+    col=(75,127,75)
+    def __init__(self,b):
+        self.base=randint(0,b.sx*64)
+        self.segs=randint(5,10)
+        self.segl=randint(32,48)
+        self.wav=uniform(0.1,0.2)
+        self.wavw=randint(4,8)
+        self.prog=uniform(0,tau)
+        self.speed=uniform(0.005,0.01)
+        self.w=randint(4,8)
+        self.h=b.sy*64
+        self.csegs=[tuple(c+randint(-10,10) for c in self.col) for _ in range(self.segs)]
+    @property
+    def points(self):
+        self.prog+=self.speed
+        self.prog%=tau
+        return seaweed(self.base,self.segs,self.segl,self.wav,self.wavw,self.prog,self.w,self.h)
+    def render(self,ss,b):
+        for n,pset in enumerate(self.points):
+            pygame.draw.polygon(ss,self.csegs[n],[tuple(p*b.ascale//4 for p in (px,py)) for px,py in pset])
 class BackSnow(Snow):
     s=12
     img = Img.imgx("FX/SmallSnow")

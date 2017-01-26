@@ -16,7 +16,7 @@ def seaweed(base,segs,segl,wav,wavw,prog,w,bh):
     polys=[]
     lps=((base-w,bh),(base+w,bh))
     for n in range(segs):
-        nps=tuple((lx+wavw*sin(prog+wav*n),ly+segl) for lx,ly in lps)
+        nps=tuple((lx+wavw*sin(prog+wav*n),ly-segl) for lx,ly in lps)
         polys.append(lps+nps[::-1])
         lps=nps
     return polys
