@@ -76,14 +76,14 @@ class RFX(FX):
     col=(0,0,0)
     points=()
     def render(self,ss,b):
-        pygame.draw.polygon(ss,self.col,self.points)
+        pygame.draw.polygon(ss,self.col,[tuple(p*b.ascale//4 for p in (px,py)) for px,py in self.points])
 class Star(RFX):
     col=(255,)*3
     def __init__(self,b):
-        self.points=list(star(randint(0,b.sx*b.rscale),randint(0,b.sy*b.rscale),randint(b.rscale/4,b.rscale/2),randint(5,7),uniform(0,tau),uniform(0.6,0.3)))
+        self.points=list(star(randint(0,b.sx*64),randint(0,b.sy*64),randint(16,32),randint(5,7),uniform(0,tau),uniform(0.6,0.3)))
 class RotoStar(Star):
     def __init__(self,b):
-        self.args=[randint(0,b.sx*b.rscale),randint(0,b.sy*b.rscale),randint(b.rscale/4,b.rscale/2),randint(5,7),0,uniform(0.6,0.3)]
+        self.args=[randint(0,b.sx*64),randint(0,b.sy*64),randint(16,32),randint(5,7),0,uniform(0.6,0.3)]
         self.r=uniform(0,tau)
         self.rs=uniform(-0.05,0.05)
     @property
@@ -106,6 +106,8 @@ class BeamFX(FX):
         ang=pi/2+self.r*sin(self.sw)
         h=b.sy*b.rscale
         pygame.draw.polygon(ss,self.col,((self.sx,h),(self.sx+h/tan(ang-self.ba),0),(self.sx+h/tan(ang+self.ba),0)))
+class Seaweed(RFX):
+    pass
 class BackSnow(Snow):
     s=12
     img = Img.imgx("FX/SmallSnow")

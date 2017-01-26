@@ -284,7 +284,7 @@ class Board(object):
                 self.goals.append(t)
             if t.updates:
                 self.updatables.append(t)
-            if t.gshape and t.grav:
+            if t.gshape and t.grav and t.gshape not in self.gshapes:
                 self.gshapes.append(t.gshape)
         if self.controlled:
             self.controlled.selected=True
