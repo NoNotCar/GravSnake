@@ -3,6 +3,9 @@ from random import randint,choice,random,uniform
 from Graphics import tau,star,seaweed
 from math import pi,sin,cos,tan,asin,acos,atan
 import pygame
+def draw_aapolygon(ss,col,points):
+    pygame.draw.polygon(ss, col, points)
+    pygame.draw.aalines(ss, col, True, points)
 class FXLayer(object):
     def __init__(self,fxs=None):
         if fxs is None:
@@ -76,7 +79,7 @@ class RFX(FX):
     col=(0,0,0)
     points=()
     def render(self,ss,b):
-        pygame.draw.polygon(ss,self.col,[tuple(p*b.ascale//4 for p in (px,py)) for px,py in self.points])
+        draw_aapolygon(ss,self.col,[tuple(p*b.ascale//4 for p in (px,py)) for px,py in self.points])
 class Star(RFX):
     col=(255,)*3
     def __init__(self,b):
@@ -105,7 +108,7 @@ class BeamFX(FX):
         self.sw%=tau
         ang=pi/2+self.r*sin(self.sw)
         h=b.sy*b.rscale
-        pygame.draw.polygon(ss,self.col,((self.sx,h),(self.sx+h/tan(ang-self.ba),0),(self.sx+h/tan(ang+self.ba),0)))
+        draw_aapolygon(ss,self.col,((self.sx,h),(self.sx+h/tan(ang-self.ba),0),(self.sx+h/tan(ang+self.ba),0)))
 class Seaweed(RFX):
     col=(75,127,75)
     def __init__(self,b):
@@ -126,7 +129,7 @@ class Seaweed(RFX):
         return seaweed(self.base,self.segs,self.segl,self.wav,self.wavw,self.prog,self.w,self.h)
     def render(self,ss,b):
         for n,pset in enumerate(self.points):
-            pygame.draw.polygon(ss,self.csegs[n],[tuple(p*b.ascale//4 for p in (px,py)) for px,py in pset])
+            draw_aapolygon(ss,self.csegs[n],[tuple(p*b.ascale//4 for p in (px,py)) for px,py in pset])
 class BackSnow(Snow):
     s=12
     img = Img.imgx("FX/SmallSnow")
