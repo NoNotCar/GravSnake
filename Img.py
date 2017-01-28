@@ -74,10 +74,13 @@ def tilesplit(tile):
     return sss
 class UltraTiles(object):
     blank=imgx("Blank")
-    def __init__(self,fil,cc=False):
+    def __init__(self,fil,*ccs):
         tiles=imgstripx(fil)
-        if cc:
-            [colswap(t,(128,128,128),cc) for t in tiles]
+        for n,cc in enumerate(ccs):
+            if n:
+                [colswap(t, cc[0], cc[1]) for t in tiles]
+            else:
+                [colswap(t, (128,)*3, cc) for t in tiles]
         self.tiles=[tilesplit(t) for t in tiles]
         self.cache={}
     def __getitem__(self, item):
@@ -101,7 +104,7 @@ class NSUltraTiles(UltraTiles):
             self.cache[item]=tile
             return tile
     def convert(self,u,r,d,l):
-        return (u+l,u+r,d+l,d+r)
+        return u*2+l,u*2+r,d*2+l,d*2+r
 def imgstrip(fil):
     i = img(fil)
     imgs = []

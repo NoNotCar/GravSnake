@@ -113,6 +113,7 @@ while True:
                     try:
                         with open(Img.np(Img.loc + savename+".lvl"), "r") as save:
                             b=pickle.load(save)
+                            b.re_img()
                             resize_ss()
                     except IOError:
                         pass

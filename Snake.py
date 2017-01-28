@@ -1,5 +1,5 @@
 from Tiles import Tile,GravShape
-from Img import imgstripx,tilemapx, multicolcopy,sndget,ImageManager
+from Img import imgstripx,tilemapx, multicolcopy,sndget,ImageManager,NSUltraTiles
 from random import randint
 import Direction as D
 from copy import deepcopy
@@ -11,23 +11,21 @@ def gen_col():
         if any(c>128 for c in snakecol):
             return snakecol
 class SnakeImageManager(ImageManager):
-    def __init__(self,h,t,col_function=gen_col):
+    def __init__(self,t,col_function=gen_col):
         ImageManager.__init__(self)
-        self.h=h
         self.t=t
         self.cf=col_function
     def gen_img(self):
         col = self.cf()
-        return ([multicolcopy(i, ((128, 128, 128), col), ((64, 64, 64), tuple(c // 2 for c in col))) for i in self.h],
-                                   [multicolcopy(i, ((128, 128, 128), col),((64, 64, 64), tuple(c // 2 for c in col))) for i in self.t])
-IM_SNAKE=SnakeImageManager(imgstripx("SnakeHead"),tilemapx("SnakeSeg"))
-IM_IRONSNAKE=SnakeImageManager(imgstripx("IronSnakeHead"),tilemapx("IronSnakeSeg"),lambda:tuple(randint(100, 150) for _ in range(3)))
+        return NSUltraTiles(self.t,col,((64, 64, 64), tuple(c // 2 for c in col)))
+IM_SNAKE=SnakeImageManager("SnakeSeg")
+IM_IRONSNAKE=SnakeImageManager("IronSnakeSeg",lambda:tuple(randint(100, 150) for _ in range(3)))
 class SnakeSeg(Tile):
     name="SnakeSeg"
     spikable = True
     dconv={1:0,2:1,4:2,8:3}
     valuable = True
-    i=0
+    i=(0,0,0,0)
     def __init__(self,x,y,bdir,fdir,snake):
         Tile.__init__(self, x, y)
         self.bdir,self.fdir=bdir,fdir
@@ -44,7 +42,7 @@ class SnakeSeg(Tile):
                 if not s is self:
                     b.dest(s)
     def re_img(self,b,lstart=True):
-        self.i=sum(0 if d is None else 2**d for d in (self.bdir,self.fdir))
+        self.i=tuple(n in (self.bdir,self.fdir) for n in range(4))
     @property
     def img(self):
         return self.snake.tailimgs[self.i]
@@ -135,7 +133,7 @@ class SnakeHead(Tile):
                     b.dest(s)
     @property
     def img(self):
-        return self.snake.tailimgs[2**((self.d+2)%4)]
+        return self.snake.tailimgs[tuple(n==((self.d+2)%4) for n in xrange(4))]
     @property
     def state(self):
         return ",".join(s.name+str((s.x,s.y)) for s in self.snake.tiles)
@@ -155,10 +153,10 @@ class Snake(GravShape):
         self.iid=self.im.register()
     @property
     def tailimgs(self):
-        return self.im[self.iid][1]
+        return self.im[self.iid]
     @property
     def headimgs(self):
-        return self.im[self.iid][0]
+        return self.im[self.iid]
 class IronSnake(Snake):
     head = IronSnakeHead
     im=IM_IRONSNAKE
