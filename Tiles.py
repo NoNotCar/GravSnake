@@ -22,6 +22,7 @@ class Tile(object):
     selected=False
     pushdirs=[]
     updates=False
+    connective=False
     def __init__(self,x,y):
         self.x,self.y=x,y
     def re_img(self,b,lstart=True):
@@ -96,16 +97,18 @@ class UltraTile(Tile):
     @property
     def img(self):
         return self.ut[self.corners]
-class Dirt(UltraTile):
+class Terrain(UltraTile):
+    connective = True
+class Dirt(Terrain):
     ut=UltraTiles("Tiles/Dirt")
     name="Dirt"
-class PinkDirt(UltraTile):
+class PinkDirt(Terrain):
     ut=UltraTiles("Tiles/PinkDirt")
     name="PinkDirt"
-class Snow(UltraTile):
+class Snow(Terrain):
     ut=UltraTiles("Tiles/Snow")
     name="Snow"
-class SeaBlock(UltraTile):
+class SeaBlock(Terrain):
     ut=UltraTiles("Tiles/SeaBlock")
     name="SeaBlock"
 class Hex(UltraTile):
@@ -152,11 +155,12 @@ class Spikes(Tile):
     name="Spikes"
     spiky = True
     i=0
+    connective = True
     def re_img(self,b,lstart=True):
         self.i=0
         for n,(tx,ty) in enumerate(D.iter_offsets(self.x,self.y)):
             for t in b.get_ts(tx,ty):
-                if t.solid and not t.gshape:
+                if t.connective:
                     self.i+=2**n
                     break
     @property

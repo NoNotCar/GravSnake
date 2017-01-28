@@ -89,7 +89,19 @@ class UltraTiles(object):
                 tile.blit(self.tiles[t][n],(n%2*8,n//2*8))
             self.cache[item]=tile
             return tile
-
+class NSUltraTiles(UltraTiles):
+    def __getitem__(self, item):
+        try:
+            return self.cache[item]
+        except KeyError:
+            citem=self.convert(*item)
+            tile=self.blank.copy()
+            for n,t in enumerate(citem):
+                tile.blit(self.tiles[t][n],(n%2*8,n//2*8))
+            self.cache[item]=tile
+            return tile
+    def convert(self,u,r,d,l):
+        return (u+l,u+r,d+l,d+r)
 def imgstrip(fil):
     i = img(fil)
     imgs = []
