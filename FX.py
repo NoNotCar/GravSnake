@@ -1,15 +1,15 @@
 from math import pi,sin, tan
 from random import randint,choice,random,uniform
-
 import pygame
-
+import config
 import Img
 from Graphics import tau,star,seaweed
 
 
 def draw_aapolygon(ss,col,points):
     pygame.draw.polygon(ss, col, points)
-    pygame.draw.aalines(ss, col, True, points)
+    if config.aa_render:
+        pygame.draw.aalines(ss, col, True, points)
 class FXLayer(object):
     def __init__(self,fxs=None):
         if fxs is None:

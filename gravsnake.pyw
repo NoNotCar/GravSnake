@@ -1,11 +1,14 @@
 import sys
-
+import config
 import pygame
 
 pygame.init()
 pygame.font.init()
-ssize=pygame.display.list_modes()[0]
-screen = pygame.display.set_mode(ssize,pygame.FULLSCREEN)
+ssize=config.force_resolution if config.force_resolution else pygame.display.list_modes()[0]
+if config.fullscreen:
+    screen = pygame.display.set_mode(ssize,pygame.FULLSCREEN)
+else:
+    screen=pygame.display.set_mode(ssize)
 clock=pygame.time.Clock()
 import Img
 import pickle
