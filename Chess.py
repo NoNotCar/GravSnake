@@ -1,9 +1,9 @@
 import Img
 from Tiles import Tile,SBlockTile
-move=Img.sndget("cpmove")
+move= Img.sndget("cpmove")
 class CSelector(Tile):
     solid = False
-    img=Img.imgx("Select")
+    img= Img.imgx("Select")
     interactive = 1
     def __init__(self,x,y,p):
         Tile.__init__(self,x,y)
@@ -47,13 +47,13 @@ class ChessPiece(SBlockTile):
     def state(self):
         return self.__class__.__name__+str((self.x,self.y))
 class Knight(ChessPiece):
-    img=Img.imgx("Chess/Knight")
+    img= Img.imgx("Chess/Knight")
     def gen_selpos(self,b):
         for dx,dy in [(-1,-2),(1,-2),(-1,2),(1,2),(-2,-1),(-2,1),(2,-1),(2,1)]:
             if self.valid(self.x+dx,self.y+dy,b):
                 yield self.x+dx,self.y+dy
 class Bishop(ChessPiece):
-    img=Img.imgx("Chess/Bishop")
+    img= Img.imgx("Chess/Bishop")
     def gen_selpos(self,b):
         for dx,dy in ((-1,-1),(-1,1),(1,-1),(1,1)):
             n=1

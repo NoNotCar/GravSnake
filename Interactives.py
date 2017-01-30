@@ -1,10 +1,11 @@
-from Tiles import Tile,Block,GravShape
-import Img
 import Direction as D
-switch=Img.sndget("switch")
-error=Img.sndget("nomove")
-stick=Img.sndget("stick")
-thud=Img.sndget("thud")
+import Img
+from Tiles import Tile,Block,GravShape
+
+switch= Img.sndget("switch")
+error= Img.sndget("nomove")
+stick= Img.sndget("stick")
+thud= Img.sndget("thud")
 cols=[(255,0,0),(0,0,255),(255,255,0),(0,255,0)]
 def xswitch(b,col):
     xbs = []
@@ -21,8 +22,8 @@ def xswitch(b,col):
         switch.play()
         return True
 class XBlock(Tile):
-    bimgs=Img.imgstripx("Tiles/XBlock")
-    imgs=[[Img.multicolcopy(i,((128,)*3,col),((64,)*3,Img.darker(col)),((160,)*3,Img.lighter(col))) for i in bimgs] for col in cols]
+    bimgs= Img.imgstripx("Tiles/XBlock")
+    imgs=[[Img.multicolcopy(i, ((128,) * 3, col), ((64,) * 3, Img.darker(col)), ((160,) * 3, Img.lighter(col))) for i in bimgs] for col in cols]
     name="XBlock"
     def __init__(self,x,y,col,active=False):
         Tile.__init__(self,x,y)
@@ -40,7 +41,7 @@ class XBlock(Tile):
 class XSwitch(Tile):
     bimgs=[Img.imgrot(i) for i in Img.imgstripx("Tiles/XSwitch")]
     bimgs=bimgs[0]+bimgs[1]
-    imgs=[[Img.multicolcopy(i,((128,)*3,col),((64,)*3,Img.darker(col))) for i in bimgs] for col in cols]
+    imgs=[[Img.multicolcopy(i, ((128,) * 3, col), ((64,) * 3, Img.darker(col))) for i in bimgs] for col in cols]
     name="XSwitch"
     def __init__(self,x,y,col,active=True,rot=2):
         Tile.__init__(self,x,y)
@@ -59,7 +60,7 @@ class XSwitch(Tile):
     def pushdirs(self):
         return [D.dirs[self.r]]
 class XButton(Tile):
-    imgs=[Img.colswap(Img.imgx("Tiles/XButton"),(64,64,64),c) for c in cols]
+    imgs=[Img.colswap(Img.imgx("Tiles/XButton"), (64, 64, 64), c) for c in cols]
     interactive = True
     def __init__(self,x,y,c):
         Tile.__init__(self,x,y)
@@ -73,8 +74,8 @@ class Jelly(Block):
     interactive = 2
     goal = True
     valuable = True
-    uts=[Img.UltraTiles("Jelly",Img.lighter(col,0.3)) for col in cols]
-    faces=Img.imgstripx("JellyFace")
+    uts=[Img.UltraTiles("Jelly", Img.lighter(col, 0.3)) for col in cols]
+    faces= Img.imgstripx("JellyFace")
     name="Jelly"
     sat=False
     updates = True
@@ -122,7 +123,7 @@ class Penguin(Tile):
     goal = True
     valuable = True
     portals = True
-    imgs=Img.imgstripx("Penguin")
+    imgs= Img.imgstripx("Penguin")
     name="Penguin"
     spikable = True
     d=0
@@ -155,7 +156,7 @@ class Thud(Tile):
     goal = True
     valuable = True
     portals = True
-    imgs=Img.imgstripx("Thud")
+    imgs= Img.imgstripx("Thud")
     name="Thud"
     grav=0
     def __init__(self,x,y):
@@ -197,7 +198,7 @@ class BlockExtension(Tile):
         self.shape=block.gshape
 class Mover(BlockExtension):
     interactive = 2
-    imgs=Img.imgstripx("Blocks/Mover")
+    imgs= Img.imgstripx("Blocks/Mover")
     eimg=imgs[1]
     def move(self,dx,dy,b):
         if b.push(self.shape,dx,dy):

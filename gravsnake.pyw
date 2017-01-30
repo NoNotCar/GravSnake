@@ -1,4 +1,7 @@
-import pygame, sys
+import sys
+
+import pygame
+
 pygame.init()
 pygame.font.init()
 ssize=pygame.display.list_modes()[0]
@@ -6,7 +9,6 @@ screen = pygame.display.set_mode(ssize,pygame.FULLSCREEN)
 clock=pygame.time.Clock()
 import Img
 import pickle
-import Board
 from LevelRunner import run,lselect,run_wm
 import os
 done=False
@@ -25,7 +27,7 @@ while True:
     wm=lname in worldmaps
     while True:
         scale=64
-        with open(Img.np(Img.loc + "Levels/%s%s" % (lname,(".gwm" if wm else ".lvl")))) as s:
+        with open(Img.np(Img.loc + "Levels/%s%s" % (lname, (".gwm" if wm else ".lvl")))) as s:
             b = pickle.load(s)
             if wm:
                 try:

@@ -1,8 +1,12 @@
-import Img
+from math import pi,sin, tan
 from random import randint,choice,random,uniform
-from Graphics import tau,star,seaweed
-from math import pi,sin,cos,tan,asin,acos,atan
+
 import pygame
+
+import Img
+from Graphics import tau,star,seaweed
+
+
 def draw_aapolygon(ss,col,points):
     pygame.draw.polygon(ss, col, points)
     pygame.draw.aalines(ss, col, True, points)
@@ -56,7 +60,7 @@ class ImgFX(FX):
         ss.blit(self.img[b.iscale],self.rpos(b))
         return self.update(b)
 class Mountain(ImgFX):
-    imgs=[Img.imgx("FX/"+s+"Mountain") for s in ("Small","Double","Tall")]
+    imgs=[Img.imgx("FX/" + s + "Mountain") for s in ("Small", "Double", "Tall")]
     def __init__(self,b):
         self.i=randint(0,2)
         self.x=randint(0-self.img.w*4,b.sx*64)
@@ -65,7 +69,7 @@ class Mountain(ImgFX):
     def img(self):
         return self.imgs[self.i]
 class Snow(ImgFX):
-    img=Img.imgx("FX/Snow")
+    img= Img.imgx("FX/Snow")
     s=24
     def __init__(self,b,y=0):
         self.x=randint(-64,b.sx*64+64)

@@ -1,8 +1,9 @@
-from Img import imgx,imgstripx,tilemapx, RandomImageManager, UltraTiles,UTImageManager
-import Img
-from random import randint,choice
-from copy import deepcopy
+from random import randint
+
 import Direction as D
+import Img
+from Img import imgx,imgstripx,tilemapx, RandomImageManager, UltraTiles,UTImageManager
+
 cols=[(255,0,0),(0,0,255),(255,255,0),(0,255,0)]
 class Tile(object):
     solid=True
@@ -112,11 +113,11 @@ class SeaBlock(Terrain):
     ut=UltraTiles("Tiles/SeaBlock")
     name="SeaBlock"
 class Hex(UltraTile):
-    uts=imgs=[Img.UltraTiles("Tiles/Hex",col) for col in cols]
+    uts=imgs=[Img.UltraTiles("Tiles/Hex", col) for col in cols]
     for n,u in enumerate(uts):
         for il in u.tiles:
             for i in il:
-                Img.colswap(i,(192,192,192),Img.darker(cols[n]))
+                Img.colswap(i, (192, 192, 192), Img.darker(cols[n]))
     name="Hex"
     def __init__(self,x,y,col=0):
         UltraTile.__init__(self,x,y)
@@ -278,8 +279,8 @@ class Diamond(Tile):
         Tile.__init__(self,x,y)
         self.gshape=GravShape(self)
 class OnceGoalBlock(RotatableTile):
-    imgs=Img.imgrot(Img.imgx("Tiles/1TGoal"))
-    ct=Img.imgstripx("CrossTick")
+    imgs= Img.imgrot(Img.imgx("Tiles/1TGoal"))
+    ct= Img.imgstripx("CrossTick")
     goal = True
     sat=False
     def satisfied(self,b):

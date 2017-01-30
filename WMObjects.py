@@ -1,6 +1,9 @@
-import Img
-import Direction as D
 import pickle
+
+import Direction as D
+import Img
+
+
 class Terrain(object):
     ut=None
     corners=(0,0,0,0)
@@ -24,18 +27,18 @@ class Terrain(object):
     def img(self):
         return self.ut[self.corners]
 class Dirt(Terrain):
-    ut=Img.UltraTiles("Tiles/WMapDirt")
+    ut= Img.UltraTiles("Tiles/WMapDirt")
     name="Dirt"
 class PinkDirt(Terrain):
-    ut=Img.UltraTiles("Tiles/WMapPinkDirt")
+    ut= Img.UltraTiles("Tiles/WMapPinkDirt")
     name="PinkDirt"
 class Snow(Terrain):
-    ut=Img.UltraTiles("Tiles/WMapSnow")
+    ut= Img.UltraTiles("Tiles/WMapSnow")
     name="Snow"
 class Path(object):
     ut = Img.UltraTiles("WMapPath")
-    but=Img.UltraTiles("WMapBridge")
-    bbits=Img.imgstripx("BridgeBit")
+    but= Img.UltraTiles("WMapBridge")
+    bbits= Img.imgstripx("BridgeBit")
     eimg=ut[(0,0,0,0)]
     corners = (0, 0, 0, 0)
     revealed=1
@@ -74,7 +77,7 @@ class Path(object):
                     if br:
                         ss.blit(self.bbits[n][b.iscale], (x * b.rscale, y * b.rscale))
 class Spawn(Path):
-    limg=Img.imgx("WMapGo")
+    limg= Img.imgx("WMapGo")
     eimg=limg
     progress=1
     def draw(self,x,y,ss,b):
@@ -82,7 +85,7 @@ class Spawn(Path):
         ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
 class Level(Spawn):
     progress=0
-    limgs=Img.imgstripx("WMapLevels")
+    limgs= Img.imgstripx("WMapLevels")
     eimg = limgs[2]
     stop = True
     name="Level"
@@ -98,4 +101,4 @@ class Level(Spawn):
         if self.revealed:
             ss.blit(self.limg[b.iscale], (x * b.rscale, y * b.rscale))
         if not b.game:
-            Img.bcentrepos(Img.sfont,self.lname,ss,(x*b.rscale+b.rscale//2,y*b.rscale))
+            Img.bcentrepos(Img.sfont, self.lname, ss, (x * b.rscale + b.rscale // 2, y * b.rscale))

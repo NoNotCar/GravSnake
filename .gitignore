@@ -135,8 +135,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-# Windows shortcuts
-*.lnk
 
 #pycharm
 .idea

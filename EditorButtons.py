@@ -1,7 +1,10 @@
-import Img
-import Tiles, Interactives,Board
 import Biomes
 import Direction as D
+import Img
+import Interactives
+import Tiles
+
+
 class ExternalMethod(Exception):
     def __init__(self,task):
         self.task=task
@@ -50,10 +53,10 @@ class BiomeButton(Button):
     def on_click(self,mb,board):
         self.b+=1
         self.b%=len(Biomes.biomes)
-        board.biome=Biomes.biomes[self.b]
+        board.biome= Biomes.biomes[self.b]
         btp.reload(board)
     def reload(self,b):
-        self.b=Biomes.biomes.index(b.biome)
+        self.b= Biomes.biomes.index(b.biome)
     @property
     def img(self):
         return Biomes.bimgs[self.b]
@@ -163,9 +166,9 @@ class SnakePlacer(Placer):
 class BlockPlacer(Placer):
     multi = True
     contiguous = False
-    img=Img.imgstripx("Tiles/GravBlock")[0]
-    bc=Tiles.Block
-    sc=Tiles.BGravShape
+    img= Img.imgstripx("Tiles/GravBlock")[0]
+    bc= Tiles.Block
+    sc= Tiles.BGravShape
     def place(self,b,tpos):
         block=self.sc()
         for n,(tx,ty) in enumerate(tpos):
@@ -173,23 +176,23 @@ class BlockPlacer(Placer):
         b.re_img()
 class CloudBlockPlacer(BlockPlacer):
     img = Img.imgstripx("Tiles/CloudBlock")[0]
-    bc=Tiles.CloudBlock
-    sc=Tiles.GravShape
+    bc= Tiles.CloudBlock
+    sc= Tiles.GravShape
 class SpikeBlockPlacer(BlockPlacer):
     img = Img.imgstripx("Tiles/SpikeBlock")[0]
-    bc=Tiles.SpikeBlock
-    sc=Tiles.GravShape
+    bc= Tiles.SpikeBlock
+    sc= Tiles.GravShape
 class CheesePlacer(BlockPlacer):
     img = Img.imgstripx("Tiles/Cheese")[0]
-    bc=Tiles.Cheese
-    sc=Tiles.GravShape
+    bc= Tiles.Cheese
+    sc= Tiles.GravShape
 class JellyPlacer(BlockPlacer):
-    imgs = [Interactives.Jelly.uts[n][0,0,0,0] for n in range(4)]
+    imgs = [Interactives.Jelly.uts[n][0, 0, 0, 0] for n in range(4)]
     col=0
     def place(self,b,tpos):
-        block=Tiles.GravShape()
+        block= Tiles.GravShape()
         for n,(tx,ty) in enumerate(tpos):
-            b.spawn(Interactives.Jelly(tx,ty,block,self.col))
+            b.spawn(Interactives.Jelly(tx, ty, block, self.col))
         b.re_img()
     def scroll(self,d):
         self.col += d
@@ -226,7 +229,7 @@ class BEPlacer(Placer):
         self.img=self.beclass.eimg
     def place(self,b,tpos):
         for t in b.get_ts(*tpos):
-            if isinstance(t,Tiles.Block):
+            if isinstance(t, Tiles.Block):
                 t.extension=self.beclass(t)
                 break
 class WMTerrainPlacer(Placer):

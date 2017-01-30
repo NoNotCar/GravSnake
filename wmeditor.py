@@ -1,4 +1,7 @@
-import pygame, sys
+import sys
+
+import pygame
+
 pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode(pygame.display.list_modes()[0],pygame.FULLSCREEN)
@@ -15,7 +18,7 @@ levels = os.listdir(Img.np(Img.loc + "Levels"))
 levels = [l[:-4] for l in levels if l[-4:] == ".lvl"]
 size=(12,12)
 scale=64
-b=WorldMap.WorldMap(size)
+b= WorldMap.WorldMap(size)
 def resize_ss():
     global ss,r,scale
     scale=b.scale
@@ -25,8 +28,8 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
-placers=[B.WMTerrainPlacer(WMObjects.Dirt),B.WMTerrainPlacer(WMObjects.Snow),B.WMTerrainPlacer(WMObjects.PinkDirt),
-         B.WMPathPlacer(WMObjects.Path),B.WMPathPlacer(WMObjects.Spawn),B.WMLevelPlacer(WMObjects.Level)]
+placers=[B.WMTerrainPlacer(WMObjects.Dirt), B.WMTerrainPlacer(WMObjects.Snow), B.WMTerrainPlacer(WMObjects.PinkDirt),
+         B.WMPathPlacer(WMObjects.Path), B.WMPathPlacer(WMObjects.Spawn), B.WMLevelPlacer(WMObjects.Level)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -34,13 +37,13 @@ pr=pygame.Rect(0,0,(len(placers)-1)//16*64+64,min(len(placers)*64,1024))
 pr.centery=screen.get_rect().centery
 pss=screen.subsurface(pr)
 selected=0
-selimg=Img.imgx("Select")
+selimg= Img.imgx("Select")
 screen.fill((100,100,100))
 pygame.display.flip()
 saving=False
 savename="Levels/test"
 multipos=[]
-error=Img.sndget("nomove")
+error= Img.sndget("nomove")
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
             sys.exit()
@@ -71,7 +74,7 @@ while True:
                         pb.prepare(None)
                         run_wm(pb,screen,ss,r)
                     elif m.task=="New":
-                        b=WorldMap.WorldMap((b.sx,b.sy),b.scale)
+                        b= WorldMap.WorldMap((b.sx, b.sy), b.scale)
                         for im in Img.imss:
                             im.reload()
                     flip=True
@@ -82,7 +85,7 @@ while True:
             kmods=pygame.key.get_mods()
             if e.key==pygame.K_s and kmods&pygame.KMOD_CTRL:
                 if saving=="save":
-                    with open(Img.np(Img.loc + savename+".gwm"), "w") as save:
+                    with open(Img.np(Img.loc + savename+ ".gwm"), "w") as save:
                         pickle.dump(b, save)
                     saving=False
                 elif saving:
@@ -92,7 +95,7 @@ while True:
             elif e.key==pygame.K_o and kmods&pygame.KMOD_CTRL:
                 if saving=="open":
                     try:
-                        with open(Img.np(Img.loc + savename+".gwm"), "r") as save:
+                        with open(Img.np(Img.loc + savename+ ".gwm"), "r") as save:
                             b=pickle.load(save)
                             resize_ss()
                     except IOError:
@@ -147,7 +150,7 @@ while True:
         if n==selected:
             pss.blit(selimg[3], (n//16*64,n%16*64))
     b.render(ss)
-    sr=Img.bcentrex(Img.savfont,savename+".gwm",screen,screen.get_height()-32,(255,0,0) if saving else (0,0,0))
+    sr= Img.bcentrex(Img.savfont, savename + ".gwm", screen, screen.get_height() - 32, (255, 0, 0) if saving else (0, 0, 0))
     if multipos:
         for mpos in multipos:
             ss.blit(selimg[scale//16-1],tuple(m*scale for m in mpos))

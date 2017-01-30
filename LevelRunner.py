@@ -1,7 +1,12 @@
-import pygame,sys
 from copy import deepcopy
 from random import randint,choice
-import Board,Img,WorldMap
+
+import pygame
+
+import Board
+import Img
+import WorldMap
+
 clock=pygame.time.Clock()
 downscale={64:48,48:32,32:16,16:16}
 fool=["IDIOT","FAILIURE","OH DEAR","OH DEARIE ME","INCOMPETENT","HAHA","FAIL","STUPID","FOOOOOOL"]
@@ -140,7 +145,7 @@ def lselect(screen,levels=(),worldmaps=()):
             pygame.draw.rect(screen, (200, 200, 200) if n % 2 else (150, 150, 150),
                              pygame.Rect(0, n * 64 + 64 - scroll, screen.get_width(), 64))
             if s[0]=="#":
-                Img.bcentrex(Img.bfont, s[1:], screen, n*64-16 - scroll)
+                Img.bcentrex(Img.bfont, s[1:], screen, n * 64 - 16 - scroll)
             else:
                 Img.bcentrex(Img.savfont, s, screen, n * 64 + 16 - scroll)
         clock.tick(60)

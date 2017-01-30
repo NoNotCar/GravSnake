@@ -1,4 +1,7 @@
-import pygame, sys
+import sys
+
+import pygame
+
 pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode(pygame.display.list_modes()[0],pygame.FULLSCREEN)
@@ -11,12 +14,11 @@ import Interactives
 import Direction as D
 from Snake import Snake,IronSnake
 import Chess
-from random import choice
 from copy import deepcopy
 from LevelRunner import run
 size=(12,12)
 scale=64
-b=Board.Board(size)
+b= Board.Board(size)
 def resize_ss():
     global ss,r,scale
     scale=b.scale
@@ -26,14 +28,16 @@ def resize_ss():
 resize_ss()
 downscale={64:48,48:32,32:16,16:16}
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.BiomeButton(),B.ExternalButton("Play")]
-placers=[B.Rotator(),B.btp,B.TerrainPlacer(Tiles.WoodPlatform),B.TerrainPlacer(Tiles.Portal),
-         B.SnakePlacer(Snake),B.SnakePlacer(IronSnake),B.TerrainPlacer(Tiles.Fruit),B.TerrainPlacer(Tiles.Spikes),
-         B.BlockPlacer(),B.CloudBlockPlacer(),B.SpikeBlockPlacer(),
-         B.NTerrainPlacer(Interactives.XBlock,4,0),B.NTerrainPlacer(Interactives.XBlock,4,1),
-         B.NTerrainPlacer(Interactives.XSwitch,4),B.NTerrainPlacer(Interactives.XSwitch,4,0),B.NTerrainPlacer(Interactives.XButton,4),
-         B.TerrainPlacer(Tiles.Diamond),B.JellyPlacer(),B.TerrainPlacer(Interactives.Penguin),
-         B.MTerrainPlacer(Interactives.Thud,Interactives.SpikyThud),B.TerrainPlacer(Tiles.Fluffy),B.Zipper(),B.BEPlacer(Interactives.Mover),
-         B.MTerrainPlacer(Chess.Knight,Chess.Bishop),B.NTerrainPlacer(Tiles.OnceGoalBlock,4)]
+placers=[B.Rotator(), B.btp, B.TerrainPlacer(Tiles.WoodPlatform), B.TerrainPlacer(Tiles.Portal),
+         B.SnakePlacer(Snake), B.SnakePlacer(IronSnake), B.TerrainPlacer(Tiles.Fruit), B.TerrainPlacer(Tiles.Spikes),
+         B.BlockPlacer(), B.CloudBlockPlacer(), B.SpikeBlockPlacer(),
+         B.NTerrainPlacer(Interactives.XBlock, 4, 0), B.NTerrainPlacer(Interactives.XBlock, 4, 1),
+         B.NTerrainPlacer(Interactives.XSwitch, 4), B.NTerrainPlacer(Interactives.XSwitch, 4, 0), B.NTerrainPlacer(
+        Interactives.XButton, 4),
+         B.TerrainPlacer(Tiles.Diamond), B.JellyPlacer(), B.TerrainPlacer(Interactives.Penguin),
+         B.MTerrainPlacer(Interactives.Thud, Interactives.SpikyThud), B.TerrainPlacer(Tiles.Fluffy), B.Zipper(), B.BEPlacer(
+        Interactives.Mover),
+         B.MTerrainPlacer(Chess.Knight, Chess.Bishop), B.NTerrainPlacer(Tiles.OnceGoalBlock, 4)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
@@ -41,13 +45,13 @@ pr=pygame.Rect(0,0,(len(placers)-1)//16*64+64,min(len(placers)*64,1024))
 pr.centery=screen.get_rect().centery
 pss=screen.subsurface(pr)
 selected=0
-selimg=Img.imgx("Select")
+selimg= Img.imgx("Select")
 screen.fill((100,100,100))
 pygame.display.flip()
 saving=False
 savename="Levels/test"
 multipos=[]
-error=Img.sndget("nomove")
+error= Img.sndget("nomove")
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
             sys.exit()
@@ -89,7 +93,7 @@ while True:
                         run(pb,screen,ss,r)
                         pygame.mixer.music.stop()
                     elif m.task=="New":
-                        b=Board.Board((b.sx,b.sy),b.scale)
+                        b= Board.Board((b.sx, b.sy), b.scale)
                         for im in Img.imss:
                             im.reload()
                         reboard(b)
@@ -101,7 +105,7 @@ while True:
             kmods=pygame.key.get_mods()
             if e.key==pygame.K_s and kmods&pygame.KMOD_CTRL:
                 if saving=="save":
-                    with open(Img.np(Img.loc + savename+".lvl"), "w") as save:
+                    with open(Img.np(Img.loc + savename+ ".lvl"), "w") as save:
                         pickle.dump(b, save)
                     saving=False
                 elif saving:
@@ -111,7 +115,7 @@ while True:
             elif e.key==pygame.K_o and kmods&pygame.KMOD_CTRL:
                 if saving=="open":
                     try:
-                        with open(Img.np(Img.loc + savename+".lvl"), "r") as save:
+                        with open(Img.np(Img.loc + savename+ ".lvl"), "r") as save:
                             b=pickle.load(save)
                             b.re_img()
                             resize_ss()
@@ -163,7 +167,7 @@ while True:
         if n==selected:
             pss.blit(selimg[3], (n//16*64,n%16*64))
     b.render(ss)
-    sr=Img.bcentrex(Img.savfont,savename+".lvl",screen,screen.get_height()-32,(255,0,0) if saving else (0,0,0))
+    sr= Img.bcentrex(Img.savfont, savename + ".lvl", screen, screen.get_height() - 32, (255, 0, 0) if saving else (0, 0, 0))
     if multipos:
         for mpos in multipos:
             ss.blit(selimg[scale//16-1],tuple(m*scale for m in mpos))

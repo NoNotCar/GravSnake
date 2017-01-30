@@ -1,12 +1,13 @@
-import Img
-from random import choice, randint
-import pygame
 import itertools
-import Direction as D
-import Tiles
-import Biomes
 from copy import deepcopy
-spike=Img.sndget("spiked")
+
+import pygame
+
+import Biomes
+import Img
+import Tiles
+
+spike= Img.sndget("spiked")
 white=(255,255,255)
 INPUT=0
 GRAVITY=1
@@ -17,8 +18,8 @@ class GameEnd(Exception):
         self.code=code
 kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
        pygame.K_UP: (0, -1), pygame.K_LEFT: (-1, 0), pygame.K_DOWN: (0, 1), pygame.K_RIGHT: (1, 0)}
-portal=Img.sndget("portal")
-exp=Img.sndget("exp")
+portal= Img.sndget("portal")
+exp= Img.sndget("exp")
 speed=5
 musics=["Overworld","Mars","Snow","Glowsphere","Underwater"]
 class Board(object):
@@ -31,7 +32,7 @@ class Board(object):
     rscale=64
     phase=GRAVITY
     fruit=0
-    biome=Biomes.Islands
+    biome= Biomes.Islands
     controlled=None
     def __init__(self,size,scale=64):
         self.sx,self.sy=size
@@ -154,7 +155,7 @@ class Board(object):
                     for e in exps:
                         if self.in_world(e.x,e.y):
                             self.dest(e)
-                            self.spawn(Tiles.Explosion(e.x,e.y))
+                            self.spawn(Tiles.Explosion(e.x, e.y))
                             self.phase=EXPLODING
                     fixed.update(cgroup)
                     grav=True

@@ -1,14 +1,17 @@
-import WMObjects
-import Img
-import Direction as D
-import pygame
 import pickle
-mm=Img.imgx("MapMan")
+
+import pygame
+
+import Direction as D
+import Img
+import WMObjects
+
+mm= Img.imgx("MapMan")
 MOVEMENT=0
 UNLOCK=1
 COMPLETE=2
-lcomplete=Img.sndget("lcomplete")
-reveal=Img.sndget("beep")
+lcomplete= Img.sndget("lcomplete")
+reveal= Img.sndget("beep")
 kconv={pygame.K_w:(0,-1),pygame.K_a:(-1,0),pygame.K_s:(0,1),pygame.K_d:(1,0),
        pygame.K_UP: (0, -1), pygame.K_LEFT: (-1, 0), pygame.K_DOWN: (0, 1), pygame.K_RIGHT: (1, 0)}
 class RunLevel(Exception):
@@ -58,7 +61,7 @@ class WorldMap(object):
                     p.progress=1
                     self.completed.add(p.lname)
                     if self.savename is not None:
-                        with open(Img.np(Img.loc+"Save/"+self.savename+".sav"),"w") as s:
+                        with open(Img.np(Img.loc+ "Save/"+self.savename+ ".sav"), "w") as s:
                             pickle.dump(self.completed,s)
                     self.unodes=[(self.px,self.py)]
                     self.state=UNLOCK
@@ -149,7 +152,7 @@ class WorldMap(object):
         for p,x,y in self.iterpaths(True):
             p.revealed=False
         for p, x, y in self.iterpaths(True):
-            if p.__class__==WMObjects.Spawn:
+            if p.__class__== WMObjects.Spawn:
                 self.px, self.py =x,y
                 self.unodes.append((x,y))
             elif p.name=="Level" and completed and p.lname in completed:
