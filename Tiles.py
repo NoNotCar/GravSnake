@@ -112,6 +112,9 @@ class Snow(Terrain):
 class SeaBlock(Terrain):
     ut=UltraTiles("Tiles/SeaBlock")
     name="SeaBlock"
+class Asteroid(Terrain):
+    ut=UltraTiles("Tiles/Asteroid")
+    name="Asteroid"
 class Hex(UltraTile):
     uts=imgs=[Img.UltraTiles("Tiles/Hex", col) for col in cols]
     for n,u in enumerate(uts):
@@ -138,19 +141,8 @@ class Explosion(Tile):
 class WoodPlatform(Tile):
     solid = False
     unisolid = ((0,-1),)
-    imgs=imgstripx("Tiles/WoodPlat")
+    img=imgx("Tiles/WoodPlat")
     name="WoodPlatform"
-    i=0
-    def re_img(self,b,lstart=True):
-        self.i=0
-        for n,(tx,ty) in enumerate(D.iter_offsets(self.x,self.y,((-1,0),(1,0)))):
-            for t in b.get_ts(tx,ty):
-                if t.name==self.name or (t.solid and not t.gshape):
-                    self.i+=2**n
-                    break
-    @property
-    def img(self):
-        return self.imgs[self.i]
 class Spikes(Tile):
     imgs=tilemapx("Tiles/Spikes")
     name="Spikes"

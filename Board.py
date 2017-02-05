@@ -112,14 +112,14 @@ class Board(object):
     def grav(self):
         grav=False
         fixed=set()
-        shapes=[t.gshape for t in self.itertiles() if t.gshape and t.grav]
-        for s in sorted(shapes,key=lambda s:s.tiles[0].grav,reverse=True):
+        shapes=[t.gshape for t in self.itertiles() if t.gshape and t.grav*self.biome.gravity]
+        for s in sorted(shapes,key=lambda s:s.tiles[0].grav*self.biome.gravity,reverse=True):
             if s.tiles[0] in fixed:
                 continue
             cgroup=s.tiles[:]
             ocgroup=cgroup[:]
             failnofall=None
-            g=s.tiles[0].grav
+            g=s.tiles[0].grav*self.biome.gravity
             falling=True
             for c,cx,cy in ((c,c.x,c.y) for c in cgroup if c.is_face(0,g)):
                 for ot in self.get_ts(cx,cy+g):

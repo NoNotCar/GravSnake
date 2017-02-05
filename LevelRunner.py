@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import randint,choice
 
-import pygame
+import pygame,sys
 
 import Board
 import Img
@@ -14,6 +14,8 @@ yay=["HOORAH","SUPERB","SUCCESS","YOU WIN","AMAZING","PASS","10/10 WOULD PLAY AG
 def check_exit(event):
     if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
         return True
+    elif event.type==pygame.QUIT:
+        sys.exit()
 def run(b,screen,ss,r):
     undos=[deepcopy(b)]
     back = b.biome.backcolour

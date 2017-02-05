@@ -21,7 +21,7 @@ worldmaps=[l[:-4] for l in saved if l[-4:] == ".gwm"]
 downscale={64:48,48:32,32:16,16:16}
 scale=64
 def check_exit(event):
-    if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
+    if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE or event.type==pygame.QUIT:
         sys.exit()
 while True:
     lname=lselect(screen,levels,worldmaps)

@@ -38,13 +38,13 @@ class RFXLayer(FXLayer):
             if random()<self.d:
                 self.fxs.append(self.fx(b))
 class DFXLayer(FXLayer):
-    def __init__(self,fx,density,b,i_x=False,i_y=False):
+    def __init__(self,fx,density,b,i_x=False,i_y=False,args=()):
         self.d=density
         self.fx=fx
         FXLayer.__init__(self)
         for _ in xrange((1 if i_x else b.sx)*(1 if i_y else b.sy)):
             if random() < self.d:
-                self.fxs.append(self.fx(b))
+                self.fxs.append(self.fx(b,*args))
 class FX(object):
     x=0
     y=0
@@ -86,11 +86,13 @@ class RFX(FX):
         draw_aapolygon(ss,self.col,[tuple(p*b.ascale//4 for p in (px,py)) for px,py in self.points])
 class Star(RFX):
     col=(255,)*3
-    def __init__(self,b):
-        self.points=list(star(randint(0,b.sx*64),randint(0,b.sy*64),randint(16,32),randint(5,7),uniform(0,tau),uniform(0.6,0.3)))
+    def __init__(self,b,col=None):
+        if col:
+            self.col=col
+        self.points=list(star(randint(0,b.sx*64),randint(0,b.sy*64),randint(8,16),randint(5,7),uniform(0,tau),uniform(0.6,0.3)))
 class RotoStar(Star):
     def __init__(self,b):
-        self.args=[randint(0,b.sx*64),randint(0,b.sy*64),randint(16,32),randint(5,7),0,uniform(0.6,0.3)]
+        self.args=[randint(0,b.sx*64),randint(0,b.sy*64),randint(8,32),randint(5,7),0,uniform(0.6,0.3)]
         self.r=uniform(0,tau)
         self.rs=uniform(-0.05,0.05)
     @property

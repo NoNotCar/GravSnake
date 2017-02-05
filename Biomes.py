@@ -10,6 +10,7 @@ class Biome(object):
     img=None
     music= "Overworld"
     water=False
+    gravity=1
     terrain=None
     def __init__(self,b):
         pass
@@ -87,5 +88,14 @@ class Special(Biome):
     def render_back(self,ss,b):
         self.starfx.render(ss,b)
         self.beamfx.render(ss,b)
-biomes=Islands,Snow,Underwater,Alien,PinkIslands,Special
+class Starry(Biome):
+    backcolour = (0,0,16)
+    music="SpacetimeDX"
+    terrain = Tiles.Asteroid
+    gravity = 0
+    def __init__(self,b):
+        self.starfx= FX.DFXLayer(FX.Star, 0.2, b,args=((200,200,255),))
+    def render_back(self,ss,b):
+        self.starfx.render(ss,b)
+biomes=Islands,Snow,Underwater,Alien,PinkIslands,Starry,Special
 bimgs=[Img.imgx("B_" + b.__name__) for b in biomes]

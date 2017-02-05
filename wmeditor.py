@@ -1,10 +1,14 @@
 import sys
-
+import config
 import pygame
 
 pygame.init()
 pygame.font.init()
-screen = pygame.display.set_mode(pygame.display.list_modes()[0],pygame.FULLSCREEN)
+ssize=config.force_resolution if config.force_resolution else pygame.display.list_modes()[0]
+if config.fullscreen:
+    screen = pygame.display.set_mode(ssize,pygame.FULLSCREEN)
+else:
+    screen=pygame.display.set_mode(ssize)
 clock=pygame.time.Clock()
 import WorldMap, Img
 import EditorButtons as B
@@ -25,15 +29,22 @@ def resize_ss():
     r = pygame.Rect(0, 0, b.sx * scale, b.sy * scale)
     r.center = screen.get_rect().center
     ss = screen.subsurface(r)
-resize_ss()
 downscale={64:48,48:32,32:16,16:16}
+while True:
+    try:
+        resize_ss()
+        break
+    except ValueError:
+        scale = downscale[scale]
+        b.scale = scale
 buttons=[B.ExternalButton("New"),B.Resizer(0),B.Resizer(1),B.Scaler(),B.ExternalButton("Play")]
 placers=[B.WMTerrainPlacer(WMObjects.Dirt), B.WMTerrainPlacer(WMObjects.Snow), B.WMTerrainPlacer(WMObjects.PinkDirt),
          B.WMPathPlacer(WMObjects.Path), B.WMPathPlacer(WMObjects.Spawn), B.WMLevelPlacer(WMObjects.Level)]
 br=pygame.Rect(0,0,len(buttons)*64,64)
 br.centerx=screen.get_rect().centerx
 bss=screen.subsurface(br)
-pr=pygame.Rect(0,0,(len(placers)-1)//16*64+64,min(len(placers)*64,1024))
+tsy=ssize[1]//64
+pr=pygame.Rect(0,0,(len(placers)-1)//tsy*64+64,min(len(placers)*64,1024))
 pr.centery=screen.get_rect().centery
 pss=screen.subsurface(pr)
 selected=0
@@ -45,7 +56,7 @@ savename="Levels/test"
 multipos=[]
 error= Img.sndget("nomove")
 def check_exit(event):
-    if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
+    if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE or event.type==pygame.QUIT:
             sys.exit()
 while True:
     flip=False
@@ -79,7 +90,7 @@ while True:
                             im.reload()
                     flip=True
             elif pr.collidepoint(mx,my):
-                nsel=(my-pr.top)//64+mx//64*16
+                nsel=(my-pr.top)//64+mx//64*tsy
                 selected=nsel if nsel<len(placers) else selected
         elif e.type==pygame.KEYDOWN:
             kmods=pygame.key.get_mods()
@@ -146,9 +157,9 @@ while True:
     for n,bu in enumerate(buttons):
         bu.draw(bss,b,n*64,0)
     for n,p in enumerate(placers):
-        pss.blit(p.img[3],(n//16*64,n%16*64))
+        pss.blit(p.img[3],(n//tsy*64,n%tsy*64))
         if n==selected:
-            pss.blit(selimg[3], (n//16*64,n%16*64))
+            pss.blit(selimg[3], (n//tsy*64,n%tsy*64))
     b.render(ss)
     sr= Img.bcentrex(Img.savfont, savename + ".gwm", screen, screen.get_height() - 32, (255, 0, 0) if saving else (0, 0, 0))
     if multipos:
