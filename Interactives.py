@@ -21,6 +21,20 @@ def xswitch(b,col):
     if xbs:
         switch.play()
         return True
+def gswitch(b):
+    gbs = []
+    for t in b.itertiles():
+        if t.name in ("GSwitch",):
+            if not any((ot.solid for ot in b.get_ts(t.x, t.y) if not ot is t)):
+                gbs.append(t)
+            else:
+                error.play()
+                return False
+    for g in gbs:
+        g.active = not g.active
+    if gbs:
+        switch.play()
+        return True
 class XBlock(Tile):
     bimgs= Img.imgstripx("Tiles/XBlock")
     imgs=[[Img.multicolcopy(i, ((128,) * 3, col), ((64,) * 3, Img.darker(col)), ((160,) * 3, Img.lighter(col))) for i in bimgs] for col in cols]
@@ -53,6 +67,26 @@ class XSwitch(Tile):
     @property
     def img(self):
         return self.imgs[self.col][self.r+self.active*4]
+    @property
+    def solid(self):
+        return self.active
+    @property
+    def pushdirs(self):
+        return [D.dirs[self.r]]
+class GSwitch(Tile):
+    bimgs=[Img.imgrot(i) for i in Img.imgstripx("Tiles/GSwitch")]
+    name="GSwitch"
+    def __init__(self,x,y,rot=2,active=True):
+        Tile.__init__(self,x,y)
+        self.active=active
+        self.r=rot
+    def push(self,b):
+        if gswitch(b):
+            b.biome.gravity*=-1
+            return True
+    @property
+    def img(self):
+        return self.bimgs[self.active][self.r]
     @property
     def solid(self):
         return self.active
